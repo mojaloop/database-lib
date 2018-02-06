@@ -1,6 +1,6 @@
 {
   "name": "@mojaloop/central-services-database",
-  "version": "0.3.0",
+  "version": "0.4.0",
   "description": "Shared database code for central services",
   "main": "src/index.js",
   "license": "Apache-2.0",
@@ -24,18 +24,21 @@
   },
   "dependencies": {
     "bluebird": "3.5.0",
-    "knex": "0.12.9",
-    "lodash": "4.17.4"
+    "knex": "0.14.2",
+    "lodash": "4.17.5"
+  },
+  "optionalDependencies": {
+    "pg": "7.4.1"
   },
   "devDependencies": {
     "faucet": "0.0.1",
     "istanbul": "0.4.5",
     "pre-commit": "1.2.2",
-    "proxyquire": "1.7.11",
-    "sinon": "2.1.0",
-    "standard": "9.0.2",
-    "tap-xunit": "1.7.0",
-    "tape": "4.6.3",
+    "proxyquire": "1.8.0",
+    "sinon": "4.2.2",
+    "standard": "10.0.3",
+    "tap-xunit": "2.2.0",
+    "tape": "4.8.0",
     "tapes": "4.1.0"
   },
   "publishConfig": {
