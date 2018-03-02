@@ -168,7 +168,7 @@ workflows:
             tags:
               only: /.*/
             branches:
-              ignore: 
+              ignore:
                 - /feature*/
                 - /bugfix*/
       - test-coverage:
@@ -179,7 +179,7 @@ workflows:
             tags:
               only: /.*/
             branches:
-              ignore: 
+              ignore:
                 - /feature*/
                 - /bugfix*/
       - build-snapshot:

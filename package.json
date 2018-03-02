@@ -1,6 +1,6 @@
 {
   "name": "@mojaloop/central-services-database",
-  "version": "1.1.0-snapshot",
+  "version": "0.4.1",
   "description": "Shared database code for central services",
   "main": "src/index.js",
   "license": "Apache-2.0",
