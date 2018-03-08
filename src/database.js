@@ -10,8 +10,8 @@ class Database {
     this._tables = []
 
     this._listTableQueries = {
-      'pg': (k) => {
-        return k('pg_catalog.pg_tables').where({ schemaname: 'public' }).select('tablename').then(rows => rows.map(r => r.tablename))
+      'mysql': (k) => {
+        return k('information_schema.tables').where('TABLE_SCHEMA', 'mojaloop').select('TABLE_NAME').then(rows => rows.map(r => r.TABLE_NAME))
       }
     }
   }
@@ -75,7 +75,7 @@ class Database {
 const configureKnex = (connectionString) => {
   return new P((resolve, reject) => {
     const knexConfig = {
-      postgres: { client: 'pg' }
+      mysql: { client: 'mysql' }
     }
 
     const dbType = parseDatabaseType(connectionString)
