@@ -14,7 +14,7 @@ Test('database', databaseTest => {
   let Database
   let dbInstance
 
-  let connectionString = 'postgres://some-data-uri'
+  let connectionString = 'mysql://some-data-uri'
   let tableNames = [{ tablename: 'accounts' }, { tablename: 'users' }, { tablename: 'tokens' }]
 
   databaseTest.beforeEach(t => {
@@ -86,7 +86,7 @@ Test('database', databaseTest => {
     })
 
     connectTest.test('throw error if database type not supported for listing tables', test => {
-      delete dbInstance._listTableQueries['pg']
+      delete dbInstance._listTableQueries['mysql']
       dbInstance.connect(connectionString)
         .then(() => {
           test.fail('Should have thrown error')
