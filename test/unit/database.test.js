@@ -14,16 +14,16 @@ Test('database', databaseTest => {
   let Database
   let dbInstance
 
-  let connectionString = 'mysql://some-data-uri'
-  let tableNames = [{ tablename: 'accounts' }, { tablename: 'users' }, { tablename: 'tokens' }]
+  let connectionString = 'mysql://some-data-uri/databaseSchema'
+  let tableNames = [{ TABLE_NAME: 'accounts' }, { TABLE_NAME: 'users' }, { TABLE_NAME: 'tokens' }]
 
   databaseTest.beforeEach(t => {
     sandbox = Sinon.sandbox.create()
 
     knexConnStub = sandbox.stub()
     knexConnStub.destroy = sandbox.stub()
-    knexConnStub.client = { config: { client: 'pg' } }
-    knexConnStub.withArgs('pg_catalog.pg_tables').returns({ where: sandbox.stub().withArgs({ schemaname: 'public' }).returns({ select: sandbox.stub().withArgs('tablename').returns(P.resolve(tableNames)) }) })
+    knexConnStub.client = { config: { client: 'mysql' } }
+    knexConnStub.withArgs('information_schema.tables').returns({ where: sandbox.stub().withArgs('TABLE_SCHEMA', 'databaseSchema').returns({ select: sandbox.stub().withArgs('TABLE_NAME').returns(P.resolve(tableNames)) }) })
 
     knexStub = sandbox.stub().returns(knexConnStub)
 
@@ -46,12 +46,12 @@ Test('database', databaseTest => {
       dbInstance.connect(connectionString)
         .then(() => {
           test.ok(knexStub.calledOnce)
-          test.equal(knexStub.firstCall.args[0].client, 'pg')
+          test.equal(knexStub.firstCall.args[0].client, 'mysql')
           test.equal(knexStub.firstCall.args[0].connection, connectionString)
 
           test.equal(dbInstance._tables.length, tableNames.length)
           tableNames.forEach(tbl => {
-            test.ok(dbInstance[tbl.tablename])
+            test.ok(dbInstance[tbl.TABLE_NAME])
           })
           test.notOk(dbInstance.tableNotExists)
 
@@ -73,7 +73,7 @@ Test('database', databaseTest => {
     })
 
     connectTest.test('throw error for unsupported database type in connection string', test => {
-      dbInstance.connect('mysql://some-data-uri')
+      dbInstance.connect('pg://some-data-uri/dbname')
         .then(() => {
           test.fail('Should have thrown error')
           test.end()
@@ -93,7 +93,7 @@ Test('database', databaseTest => {
           test.end()
         })
         .catch(err => {
-          test.equal(err.message, 'Listing tables is not supported for database type pg')
+          test.equal(err.message, 'Listing tables is not supported for database type mysql')
           test.end()
         })
     })
@@ -114,7 +114,7 @@ Test('database', databaseTest => {
 
   databaseTest.test('known table property should', tablePropTest => {
     tablePropTest.test('create new query object for known table', test => {
-      let tableName = tableNames[0].tablename
+      let tableName = tableNames[0].TABLE_NAME
 
       let obj = {}
       tableStub.returns(obj)
@@ -148,11 +148,11 @@ Test('database', databaseTest => {
     disconnectTest.test('remove table properties and reset table list to empty', test => {
       dbInstance.connect(connectionString)
         .then(() => {
-          test.ok(dbInstance[tableNames[0].tablename])
+          test.ok(dbInstance[tableNames[0].TABLE_NAME])
           test.equal(dbInstance._tables.length, tableNames.length)
 
           dbInstance.disconnect()
-          test.notOk(dbInstance[tableNames[0].tablename])
+          test.notOk(dbInstance[tableNames[0].TABLE_NAME])
           test.equal(dbInstance._tables.length, 0)
 
           test.end()
