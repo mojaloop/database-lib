@@ -1,6 +1,6 @@
 {
   "name": "@mojaloop/central-services-database",
-  "version": "1.2.3-snapshotMYSQL",
+  "version": "1.2.4-snapshotMYSQL",
   "description": "Shared database code for central services",
   "main": "src/index.js",
   "license": "Apache-2.0",
