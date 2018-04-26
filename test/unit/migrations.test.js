@@ -30,8 +30,10 @@ Test('migrations', migrationsTest => {
   migrationsTest.test('migrate should', migrateTest => {
     migrateTest.test('run migrations and destroy Knex connection on completion', test => {
       let latestStub = sandbox.stub().returns(P.resolve())
+      let seedStub = sandbox.stub().returns(P.resolve())
       let destroyStub = sandbox.stub().returns(P.resolve())
       knexConnStub.migrate = { latest: latestStub }
+      knexConnStub.seed = { run: seedStub }
       knexConnStub.destroy = destroyStub
 
       let config = { migrations: { directory: 'test' } }
@@ -40,8 +42,10 @@ Test('migrations', migrationsTest => {
         .then(() => {
           test.ok(knexStub.calledWith(config))
           test.ok(latestStub.calledOnce)
+          test.ok(seedStub.calledOnce)
           test.ok(destroyStub.calledOnce)
-          test.ok(destroyStub.calledAfter(latestStub))
+          test.ok(seedStub.calledAfter(latestStub))
+          test.ok(destroyStub.calledAfter(seedStub))
           test.end()
         })
     })
