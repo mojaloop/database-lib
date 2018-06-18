@@ -18,6 +18,10 @@ class Database {
     }
   }
 
+  getKnex () {
+    return this._knex
+  }
+
   connect (connectionString) {
     if (!this._knex) {
       this._schema = parseDatabaseSchema(connectionString)
