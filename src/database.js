@@ -19,6 +19,9 @@ class Database {
   }
 
   getKnex () {
+    if (!this._knex) {
+      throw new Error('The database must be connected to get the database object')
+    }
     return this._knex
   }
 
