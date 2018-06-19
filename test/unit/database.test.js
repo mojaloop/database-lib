@@ -15,21 +15,21 @@ Test('database', databaseTest => {
   let dbInstance
 
   let connectionString = 'mysql://some-data-uri/databaseSchema'
-  let tableNames = [{ TABLE_NAME: 'accounts' }, { TABLE_NAME: 'users' }, { TABLE_NAME: 'tokens' }]
+  let tableNames = [{TABLE_NAME: 'accounts'}, {TABLE_NAME: 'users'}, {TABLE_NAME: 'tokens'}]
 
   databaseTest.beforeEach(t => {
     sandbox = Sinon.sandbox.create()
 
     knexConnStub = sandbox.stub()
     knexConnStub.destroy = sandbox.stub()
-    knexConnStub.client = { config: { client: 'mysql' } }
-    knexConnStub.withArgs('information_schema.tables').returns({ where: sandbox.stub().withArgs('TABLE_SCHEMA', 'databaseSchema').returns({ select: sandbox.stub().withArgs('TABLE_NAME').returns(P.resolve(tableNames)) }) })
+    knexConnStub.client = {config: {client: 'mysql'}}
+    knexConnStub.withArgs('information_schema.tables').returns({where: sandbox.stub().withArgs('TABLE_SCHEMA', 'databaseSchema').returns({select: sandbox.stub().withArgs('TABLE_NAME').returns(P.resolve(tableNames))})})
 
     knexStub = sandbox.stub().returns(knexConnStub)
 
     tableStub = sandbox.stub()
 
-    Database = Proxyquire(`${src}/database`, { knex: knexStub, './table': tableStub })
+    Database = Proxyquire(`${src}/database`, {knex: knexStub, './table': tableStub})
     dbInstance = new Database()
 
     t.end()
@@ -39,6 +39,32 @@ Test('database', databaseTest => {
     sandbox.restore()
     dbInstance.disconnect()
     t.end()
+  })
+
+  databaseTest.test('connect should', getKnexTest => {
+    getKnexTest.test('return the knex database object', async (test) => {
+      try {
+        await dbInstance.connect(connectionString)
+        const knex = await dbInstance.getKnex()
+        test.ok(knex)
+        test.end()
+      } catch (e) {
+        test.fail('Error thrown')
+        test.end()
+      }
+    })
+
+    getKnexTest.test('throw error when database is not connected', test => {
+      try {
+        dbInstance.getKnex()
+        test.fail('No Error thrown')
+        test.end()
+      } catch (e) {
+        test.pass('Error thrown')
+        test.end()
+      }
+    })
+    getKnexTest.end()
   })
 
   databaseTest.test('connect should', connectTest => {
@@ -57,6 +83,18 @@ Test('database', databaseTest => {
 
           test.end()
         })
+    })
+
+    connectTest.test('throw error for invalid database schema', async (test) => {
+      try {
+        dbInstance.connect('mysql://some-data-uri')
+        test.fail('Should have thrown error')
+        test.end()
+      } catch (e) {
+        test.notOk(knexStub.called)
+        test.equal(e.message, 'Invalid database type in database URI')
+        test.end()
+      }
     })
 
     connectTest.test('throw error for invalid connection string', test => {
@@ -100,13 +138,13 @@ Test('database', databaseTest => {
 
     connectTest.test('only create connection once on multiple connect calls', test => {
       dbInstance.connect(connectionString)
-      .then(() => {
-        dbInstance.connect(connectionString)
         .then(() => {
-          test.ok(knexStub.calledOnce)
-          test.end()
+          dbInstance.connect(connectionString)
+            .then(() => {
+              test.ok(knexStub.calledOnce)
+              test.end()
+            })
         })
-      })
     })
 
     connectTest.end()
