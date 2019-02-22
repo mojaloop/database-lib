@@ -437,7 +437,7 @@ Test('table', tableTest => {
 
   tableTest.test('truncate should', truncateTest => {
     truncateTest.test('call truncate method on builder', test => {
-      builderStub.truncate = sandbox.stub().returns(P.resolve())
+      builderStub.truncate = sandbox.stub().returns(P.resolve(null))
 
       table.truncate()
         .then(() => {

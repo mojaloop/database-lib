@@ -36,7 +36,7 @@ class Database {
         })
       })
     }
-    return P.resolve()
+    return P.resolve(null)
   }
 
   disconnect () {

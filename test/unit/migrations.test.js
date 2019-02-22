@@ -29,9 +29,9 @@ Test('migrations', migrationsTest => {
 
   migrationsTest.test('migrate should', migrateTest => {
     migrateTest.test('run migrations and destroy Knex connection on completion', test => {
-      let latestStub = sandbox.stub().returns(P.resolve())
-      let seedStub = sandbox.stub().returns(P.resolve())
-      let destroyStub = sandbox.stub().returns(P.resolve())
+      let latestStub = sandbox.stub().returns(P.resolve(null))
+      let seedStub = sandbox.stub().returns(P.resolve(null))
+      let destroyStub = sandbox.stub().returns(P.resolve(null))
       knexConnStub.migrate = { latest: latestStub }
       knexConnStub.seed = { run: seedStub }
       knexConnStub.destroy = destroyStub
