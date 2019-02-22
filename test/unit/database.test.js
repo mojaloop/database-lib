@@ -15,21 +15,21 @@ Test('database', databaseTest => {
   let dbInstance
 
   let connectionString = 'mysql://some-data-uri/databaseSchema'
-  let tableNames = [{TABLE_NAME: 'accounts'}, {TABLE_NAME: 'users'}, {TABLE_NAME: 'tokens'}]
+  let tableNames = [{ TABLE_NAME: 'accounts' }, { TABLE_NAME: 'users' }, { TABLE_NAME: 'tokens' }]
 
   databaseTest.beforeEach(t => {
     sandbox = Sinon.sandbox.create()
 
     knexConnStub = sandbox.stub()
     knexConnStub.destroy = sandbox.stub()
-    knexConnStub.client = {config: {client: 'mysql'}}
-    knexConnStub.withArgs('information_schema.tables').returns({where: sandbox.stub().withArgs('TABLE_SCHEMA', 'databaseSchema').returns({select: sandbox.stub().withArgs('TABLE_NAME').returns(P.resolve(tableNames))})})
+    knexConnStub.client = { config: { client: 'mysql' } }
+    knexConnStub.withArgs('information_schema.tables').returns({ where: sandbox.stub().withArgs('TABLE_SCHEMA', 'databaseSchema').returns({ select: sandbox.stub().withArgs('TABLE_NAME').returns(P.resolve(tableNames)) }) })
 
     knexStub = sandbox.stub().returns(knexConnStub)
 
     tableStub = sandbox.stub()
 
-    Database = Proxyquire(`${src}/database`, {knex: knexStub, './table': tableStub})
+    Database = Proxyquire(`${src}/database`, { knex: knexStub, './table': tableStub })
     dbInstance = new Database()
 
     t.end()
