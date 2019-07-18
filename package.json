@@ -1,6 +1,6 @@
 {
   "name": "@mojaloop/central-services-database",
-  "version": "5.3.0",
+  "version": "7.1.0",
   "description": "Shared database code for central services",
   "main": "src/index.js",
   "license": "Apache-2.0",
@@ -20,28 +20,32 @@
   ],
   "scripts": {
     "pretest": "standard",
+    "standard": "standard",
     "test": "npm run test:unit | faucet",
     "test:unit": "tape 'test/unit/**/*.test.js'",
     "test:xunit": "tape 'test/unit/**/*.test.js' | tap-xunit",
     "test:coverage": "istanbul cover tape -- 'test/unit/**/*.test.js'",
-    "test:coverage-check": "npm run test:coverage && istanbul check-coverage"
+    "test:coverage-check": "npm run test:coverage && istanbul check-coverage",
+    "audit:resolve": "SHELL=sh resolve-audit",
+    "audit:check": "SHELL=sh check-audit"
   },
   "dependencies": {
-    "bluebird": "3.5.3",
+    "bluebird": "3.5.5",
     "knex": "0.16.3",
-    "lodash": "4.17.11",
-    "mysql": "2.16.0",
+    "lodash": "4.17.14",
+    "mysql": "2.17.0",
     "url": "0.11.0"
   },
   "devDependencies": {
     "faucet": "0.0.1",
     "istanbul": "1.1.0-alpha.1",
+    "npm-audit-resolver": "1.5.0",
     "pre-commit": "1.2.2",
-    "proxyquire": "2.1.0",
-    "sinon": "7.2.4",
-    "standard": "12.0.1",
-    "tap-xunit": "2.3.0",
-    "tape": "4.10.1",
+    "proxyquire": "2.1.1",
+    "sinon": "7.3.2",
+    "standard": "13.0.2",
+    "tap-xunit": "2.4.1",
+    "tape": "4.11.0",
     "tapes": "4.1.0"
   },
   "publishConfig": {

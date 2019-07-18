@@ -12,7 +12,7 @@ class Database {
     this._schema = null
 
     this._listTableQueries = {
-      'mysql': (k) => {
+      mysql: (k) => {
         return k('information_schema.tables').where('TABLE_SCHEMA', this._schema).select('TABLE_NAME').then(rows => rows.map(r => r.TABLE_NAME))
       }
     }

@@ -14,8 +14,8 @@ Test('database', databaseTest => {
   let Database
   let dbInstance
 
-  let connectionString = 'mysql://some-data-uri/databaseSchema'
-  let tableNames = [{ TABLE_NAME: 'accounts' }, { TABLE_NAME: 'users' }, { TABLE_NAME: 'tokens' }]
+  const connectionString = 'mysql://some-data-uri/databaseSchema'
+  const tableNames = [{ TABLE_NAME: 'accounts' }, { TABLE_NAME: 'users' }, { TABLE_NAME: 'tokens' }]
 
   databaseTest.beforeEach(t => {
     sandbox = Sinon.sandbox.create()
@@ -152,14 +152,14 @@ Test('database', databaseTest => {
 
   databaseTest.test('known table property should', tablePropTest => {
     tablePropTest.test('create new query object for known table', test => {
-      let tableName = tableNames[0].TABLE_NAME
+      const tableName = tableNames[0].TABLE_NAME
 
-      let obj = {}
+      const obj = {}
       tableStub.returns(obj)
 
       dbInstance.connect(connectionString)
         .then(() => {
-          let table = dbInstance[tableName]
+          const table = dbInstance[tableName]
           test.equal(table, obj)
           test.ok(tableStub.calledWith(tableName, knexConnStub))
           test.end()
@@ -219,14 +219,14 @@ Test('database', databaseTest => {
 
   databaseTest.test('from should', fromTest => {
     fromTest.test('create a new knex object for specified table', test => {
-      let tableName = 'table'
+      const tableName = 'table'
 
-      let obj = {}
+      const obj = {}
       tableStub.returns(obj)
 
       dbInstance.connect(connectionString)
         .then(() => {
-          let fromTable = dbInstance.from(tableName)
+          const fromTable = dbInstance.from(tableName)
           test.equal(fromTable, obj)
           test.ok(tableStub.calledWith(tableName, knexConnStub))
           test.end()
@@ -234,9 +234,9 @@ Test('database', databaseTest => {
     })
 
     fromTest.test('throw error if database not connected', test => {
-      let tableName = 'table'
+      const tableName = 'table'
 
-      let obj = {}
+      const obj = {}
       tableStub.returns(obj)
 
       try {

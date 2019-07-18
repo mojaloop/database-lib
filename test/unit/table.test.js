@@ -7,7 +7,7 @@ const P = require('bluebird')
 const Table = require(`${src}/table`)
 
 Test('table', tableTest => {
-  let tableName = 'users'
+  const tableName = 'users'
   let table
   let sandbox
   let knexStub
@@ -29,8 +29,8 @@ Test('table', tableTest => {
 
   tableTest.test('insert should', insertTest => {
     insertTest.test('return inserted record', test => {
-      let fields = { id: 1 }
-      let inserted = { id: 1, accountId: 1 }
+      const fields = { id: 1 }
+      const inserted = { id: 1, accountId: 1 }
 
       builderStub.insert = sandbox.stub().returns(P.resolve([inserted]))
 
@@ -43,7 +43,7 @@ Test('table', tableTest => {
     })
 
     insertTest.test('throw error if no record returned from insert', test => {
-      let fields = { id: 1 }
+      const fields = { id: 1 }
 
       builderStub.insert = sandbox.stub().returns(P.resolve([]))
 
@@ -64,11 +64,11 @@ Test('table', tableTest => {
 
   tableTest.test('update should', updateTest => {
     updateTest.test('return updated record', test => {
-      let criteria = { id: 1 }
-      let fields = { name: 'test' }
-      let updated = { id: 1, name: 'test' }
+      const criteria = { id: 1 }
+      const fields = { name: 'test' }
+      const updated = { id: 1, name: 'test' }
 
-      let updateStub = sandbox.stub()
+      const updateStub = sandbox.stub()
       updateStub.returns(P.resolve([updated]))
       builderStub.where = sandbox.stub().returns({ update: updateStub })
 
@@ -82,11 +82,11 @@ Test('table', tableTest => {
     })
 
     updateTest.test('return multiple updated records', test => {
-      let criteria = { accountId: 3 }
-      let fields = { name: 'test' }
-      let updated = [ { id: 1, accountId: 3, name: 'test' }, { id: 2, accountId: 3, name: 'test' } ]
+      const criteria = { accountId: 3 }
+      const fields = { name: 'test' }
+      const updated = [{ id: 1, accountId: 3, name: 'test' }, { id: 2, accountId: 3, name: 'test' }]
 
-      let updateStub = sandbox.stub()
+      const updateStub = sandbox.stub()
       updateStub.returns(P.resolve(updated))
       builderStub.where = sandbox.stub().returns({ update: updateStub })
 
@@ -100,10 +100,10 @@ Test('table', tableTest => {
     })
 
     updateTest.test('return null if no record updated', test => {
-      let criteria = { id: 1 }
-      let fields = { name: 'test' }
+      const criteria = { id: 1 }
+      const fields = { name: 'test' }
 
-      let updateStub = sandbox.stub()
+      const updateStub = sandbox.stub()
       updateStub.returns(P.resolve([]))
       builderStub.where = sandbox.stub().returns({ update: updateStub })
 
@@ -116,8 +116,8 @@ Test('table', tableTest => {
     })
 
     updateTest.test('handle empty criteria', test => {
-      let fields = { name: 'test' }
-      let updated = [ { id: 1, name: 'test' }, { id: 2, name: 'test' } ]
+      const fields = { name: 'test' }
+      const updated = [{ id: 1, name: 'test' }, { id: 2, name: 'test' }]
 
       builderStub.update = sandbox.stub().returns(P.resolve(updated))
 
@@ -130,8 +130,8 @@ Test('table', tableTest => {
     })
 
     updateTest.test('handle null criteria', test => {
-      let fields = { name: 'test' }
-      let updated = [ { id: 1, name: 'test' }, { id: 2, name: 'test' } ]
+      const fields = { name: 'test' }
+      const updated = [{ id: 1, name: 'test' }, { id: 2, name: 'test' }]
 
       builderStub.update = sandbox.stub().returns(P.resolve(updated))
 
@@ -148,8 +148,8 @@ Test('table', tableTest => {
 
   tableTest.test('find should', findTest => {
     findTest.test('return matching records', test => {
-      let criteria = { name: 'test' }
-      let found = [ { id: 1, name: 'test' }, { id: 2, name: 'test2' } ]
+      const criteria = { name: 'test' }
+      const found = [{ id: 1, name: 'test' }, { id: 2, name: 'test2' }]
 
       builderStub.where = sandbox.stub().returns(P.resolve(found))
 
@@ -162,11 +162,11 @@ Test('table', tableTest => {
     })
 
     findTest.test('return matching record using order by', test => {
-      let options = { order: 'name asc' }
-      let criteria = { name: 'test' }
-      let found = [ { id: 1, name: 'test' }, { id: 2, name: 'test2' } ]
+      const options = { order: 'name asc' }
+      const criteria = { name: 'test' }
+      const found = [{ id: 1, name: 'test' }, { id: 2, name: 'test2' }]
 
-      let orderByStub = sandbox.stub().returns(P.resolve(found))
+      const orderByStub = sandbox.stub().returns(P.resolve(found))
       builderStub.where = sandbox.stub().returns({ orderBy: orderByStub })
 
       table.find(criteria, options)
@@ -179,8 +179,8 @@ Test('table', tableTest => {
     })
 
     findTest.test('handle criteria with conditions', test => {
-      let criteria = { 'id >=': 1 }
-      let found = [ { id: 1, name: 'test' }, { id: 2, name: 'test2' } ]
+      const criteria = { 'id >=': 1 }
+      const found = [{ id: 1, name: 'test' }, { id: 2, name: 'test2' }]
 
       builderStub.where = sandbox.stub().returns(P.resolve(found))
 
@@ -193,8 +193,8 @@ Test('table', tableTest => {
     })
 
     findTest.test('handle empty condition key', test => {
-      let criteria = { '': 1 }
-      let found = [ { id: 1, name: 'test' }, { id: 2, name: 'test2' } ]
+      const criteria = { '': 1 }
+      const found = [{ id: 1, name: 'test' }, { id: 2, name: 'test2' }]
 
       builderStub.where = sandbox.stub().returns(P.resolve(found))
 
@@ -207,8 +207,8 @@ Test('table', tableTest => {
     })
 
     findTest.test('ignore unknown condition', test => {
-      let criteria = { 'id !=': 1 }
-      let found = [ { id: 1, name: 'test' }, { id: 2, name: 'test2' } ]
+      const criteria = { 'id !=': 1 }
+      const found = [{ id: 1, name: 'test' }, { id: 2, name: 'test2' }]
 
       builderStub.where = sandbox.stub().returns(P.resolve(found))
 
@@ -221,8 +221,8 @@ Test('table', tableTest => {
     })
 
     findTest.test('handle criteria with array', test => {
-      let criteria = { 'id': [1, 2] }
-      let found = [ { id: 1, name: 'test' }, { id: 2, name: 'test2' } ]
+      const criteria = { id: [1, 2] }
+      const found = [{ id: 1, name: 'test' }, { id: 2, name: 'test2' }]
 
       builderStub.whereIn = sandbox.stub().returns(P.resolve(found))
 
@@ -235,10 +235,10 @@ Test('table', tableTest => {
     })
 
     findTest.test('handle multiple criteria', test => {
-      let criteria = { 'id': [1, 2], 'num >': 5 }
-      let found = [ { id: 1, name: 'test', num: 6 }, { id: 2, name: 'test2', num: 10 } ]
+      const criteria = { id: [1, 2], 'num >': 5 }
+      const found = [{ id: 1, name: 'test', num: 6 }, { id: 2, name: 'test2', num: 10 }]
 
-      let whereStub = sandbox.stub()
+      const whereStub = sandbox.stub()
       whereStub.returns(P.resolve(found))
       builderStub.whereIn = sandbox.stub().returns({ where: whereStub })
 
@@ -252,7 +252,7 @@ Test('table', tableTest => {
     })
 
     findTest.test('handle empty criteria', test => {
-      let found = [ { id: 1, name: 'test' }, { id: 2, name: 'test2' } ]
+      const found = [{ id: 1, name: 'test' }, { id: 2, name: 'test2' }]
 
       knexStub.withArgs(tableName).returns(P.resolve(found))
 
@@ -264,7 +264,7 @@ Test('table', tableTest => {
     })
 
     findTest.test('handle null criteria', test => {
-      let found = [ { id: 1, name: 'test' }, { id: 2, name: 'test2' } ]
+      const found = [{ id: 1, name: 'test' }, { id: 2, name: 'test2' }]
 
       knexStub.withArgs(tableName).returns(P.resolve(found))
 
@@ -276,11 +276,11 @@ Test('table', tableTest => {
     })
 
     findTest.test('default to ascending order if not provided', test => {
-      let options = { order: 'id' }
-      let criteria = { name: 'test' }
-      let found = [ { id: 1, name: 'test' }, { id: 2, name: 'test2' } ]
+      const options = { order: 'id' }
+      const criteria = { name: 'test' }
+      const found = [{ id: 1, name: 'test' }, { id: 2, name: 'test2' }]
 
-      let orderByStub = sandbox.stub().returns(P.resolve(found))
+      const orderByStub = sandbox.stub().returns(P.resolve(found))
       builderStub.where = sandbox.stub().returns({ orderBy: orderByStub })
 
       table.find(criteria, options)
@@ -293,9 +293,9 @@ Test('table', tableTest => {
     })
 
     findTest.test('ignore order by with too many fields', test => {
-      let options = { order: 'name asc, id desc' }
-      let criteria = { name: 'test' }
-      let found = [ { id: 1, name: 'test' }, { id: 2, name: 'test2' } ]
+      const options = { order: 'name asc, id desc' }
+      const criteria = { name: 'test' }
+      const found = [{ id: 1, name: 'test' }, { id: 2, name: 'test2' }]
 
       builderStub.where = sandbox.stub().returns(P.resolve(found))
 
@@ -308,9 +308,9 @@ Test('table', tableTest => {
     })
 
     findTest.test('handle order with no field value', test => {
-      let options = { order: ' ' }
-      let criteria = { name: 'test' }
-      let found = [ { id: 1, name: 'test' }, { id: 2, name: 'test2' } ]
+      const options = { order: ' ' }
+      const criteria = { name: 'test' }
+      const found = [{ id: 1, name: 'test' }, { id: 2, name: 'test2' }]
 
       builderStub.where = sandbox.stub().returns(P.resolve(found))
 
@@ -327,8 +327,8 @@ Test('table', tableTest => {
 
   tableTest.test('findOne should', findOneTest => {
     findOneTest.test('return first matching record', test => {
-      let criteria = { id: 1 }
-      let found = { id: 1, name: 'test' }
+      const criteria = { id: 1 }
+      const found = { id: 1, name: 'test' }
 
       builderStub.where = sandbox.stub().returns(P.resolve([found]))
 
@@ -341,7 +341,7 @@ Test('table', tableTest => {
     })
 
     findOneTest.test('return null if no record found', test => {
-      let criteria = { id: 1 }
+      const criteria = { id: 1 }
 
       builderStub.where = sandbox.stub().returns(P.resolve([]))
 
@@ -358,10 +358,10 @@ Test('table', tableTest => {
 
   tableTest.test('destroy should', destroyTest => {
     destroyTest.test('return deleted record', test => {
-      let criteria = { id: 1 }
-      let deleted = { id: 1, name: 'test' }
+      const criteria = { id: 1 }
+      const deleted = { id: 1, name: 'test' }
 
-      let delStub = sandbox.stub()
+      const delStub = sandbox.stub()
       delStub.returns(P.resolve([deleted]))
       builderStub.where = sandbox.stub().returns({ del: delStub })
 
@@ -375,10 +375,10 @@ Test('table', tableTest => {
     })
 
     destroyTest.test('return multiple deleted records', test => {
-      let criteria = { accountId: 3 }
-      let deleted = [ { id: 1, accountId: 3, name: 'test' }, { id: 2, accountId: 3, name: 'test' } ]
+      const criteria = { accountId: 3 }
+      const deleted = [{ id: 1, accountId: 3, name: 'test' }, { id: 2, accountId: 3, name: 'test' }]
 
-      let delStub = sandbox.stub()
+      const delStub = sandbox.stub()
       delStub.returns(P.resolve(deleted))
       builderStub.where = sandbox.stub().returns({ del: delStub })
 
@@ -392,9 +392,9 @@ Test('table', tableTest => {
     })
 
     destroyTest.test('return null if no record deleted', test => {
-      let criteria = { id: 1 }
+      const criteria = { id: 1 }
 
-      let delStub = sandbox.stub()
+      const delStub = sandbox.stub()
       delStub.returns(P.resolve([]))
       builderStub.where = sandbox.stub().returns({ del: delStub })
 
@@ -407,7 +407,7 @@ Test('table', tableTest => {
     })
 
     destroyTest.test('handle empty criteria', test => {
-      let deleted = [ { id: 1, name: 'test' }, { id: 2, name: 'test' } ]
+      const deleted = [{ id: 1, name: 'test' }, { id: 2, name: 'test' }]
 
       builderStub.del = sandbox.stub().returns(P.resolve(deleted))
 
@@ -420,7 +420,7 @@ Test('table', tableTest => {
     })
 
     destroyTest.test('handle null criteria', test => {
-      let deleted = [ { id: 1, name: 'test' }, { id: 2, name: 'test' } ]
+      const deleted = [{ id: 1, name: 'test' }, { id: 2, name: 'test' }]
 
       builderStub.del = sandbox.stub().returns(P.resolve(deleted))
 
@@ -451,9 +451,9 @@ Test('table', tableTest => {
 
   tableTest.test('count should', countTest => {
     countTest.test('return integer count', test => {
-      let countRecords = [{ count: '5' }]
+      const countRecords = [{ count: '5' }]
 
-      let countStub = sandbox.stub()
+      const countStub = sandbox.stub()
       countStub.returns(P.resolve(countRecords))
       builderStub.where = sandbox.stub().returns({ count: countStub })
 
@@ -467,7 +467,7 @@ Test('table', tableTest => {
     })
 
     countTest.test('handle empty criteria', test => {
-      let countRecords = [{ count: '5' }]
+      const countRecords = [{ count: '5' }]
 
       builderStub.count = sandbox.stub().returns(P.resolve(countRecords))
 
@@ -484,9 +484,9 @@ Test('table', tableTest => {
 
   tableTest.test('max should', maxTest => {
     maxTest.test('return integer max', test => {
-      let maxRecords = [{ max: 5 }]
+      const maxRecords = [{ max: 5 }]
 
-      let maxStub = sandbox.stub()
+      const maxStub = sandbox.stub()
       maxStub.returns(P.resolve(maxRecords))
       builderStub.where = sandbox.stub().returns({ max: maxStub })
 
@@ -500,7 +500,7 @@ Test('table', tableTest => {
     })
 
     maxTest.test('handle empty criteria', test => {
-      let maxRecords = [{ max: 5 }]
+      const maxRecords = [{ max: 5 }]
 
       builderStub.max = sandbox.stub().returns(P.resolve(maxRecords))
 
@@ -517,8 +517,8 @@ Test('table', tableTest => {
 
   tableTest.test('query function should', queryFuncTest => {
     queryFuncTest.test('pass builder object to callback', test => {
-      let found = { id: 1 }
-      let cbStub = sandbox.stub().returns(P.resolve(found))
+      const found = { id: 1 }
+      const cbStub = sandbox.stub().returns(P.resolve(found))
 
       table.query(cbStub)
         .then(result => {
