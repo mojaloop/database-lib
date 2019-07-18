@@ -98,16 +98,28 @@ Test('database', databaseTest => {
     })
 
     connectTest.test('throw error for invalid connection string', test => {
-      dbInstance.connect('invalid')
-        .then(() => {
-          test.fail('Should have thrown error')
-          test.end()
-        })
-        .catch(err => {
-          test.notOk(knexStub.called)
-          test.equal(err.message, 'Invalid database type in database URI')
-          test.end()
-        })
+      try {
+        dbInstance.connect('mysql://some-data-uri')
+        test.fail('Should have thrown error')
+        test.end()
+      } catch (e) {
+        test.notOk(knexStub.called)
+        test.equal(e.message, 'Invalid database type in database URI')
+        test.end()
+      }
+
+      // dbInstance.connect('invalid')
+      //   .then((r) => {
+      //     console.log('r is', r)
+      //     test.fail('Should have thrown error')
+      //     test.end()
+      //   })
+      //   .catch(err => {
+      //     console.log("ALSDIJ")
+      //     test.notOk(knexStub.called)
+      //     test.equal(err.message, 'Invalid database type in database URI')
+      //     test.end()
+      //   })
     })
 
     connectTest.test('throw error for unsupported database type in connection string', test => {
