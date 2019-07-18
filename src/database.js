@@ -3,7 +3,11 @@
 const Knex = require('knex')
 const P = require('bluebird')
 const Table = require('./table')
-const url = require('url')
+
+const {
+  parseDatabaseType,
+  parseDatabaseSchema
+} = require('./utils')
 
 class Database {
   constructor () {
@@ -12,7 +16,7 @@ class Database {
     this._schema = null
 
     this._listTableQueries = {
-      'mysql': (k) => {
+      mysql: (k) => {
         return k('information_schema.tables').where('TABLE_SCHEMA', this._schema).select('TABLE_NAME').then(rows => rows.map(r => r.TABLE_NAME))
       }
     }
@@ -95,19 +99,6 @@ const configureKnex = (connectionString) => {
       resolve(Knex(Object.assign(commonConfig, knexConfig[dbType])))
     }
   })
-}
-
-const parseDatabaseType = (uri) => {
-  return uri.split(':')[0]
-}
-
-const parseDatabaseSchema = (uri) => {
-  const schema = url.parse(uri, true, false)
-  if (schema.pathname) {
-    return schema.pathname.replace('/', '')
-  } else {
-    throw new Error('Invalid database type in database URI')
-  }
 }
 
 module.exports = Database

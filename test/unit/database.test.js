@@ -14,8 +14,8 @@ Test('database', databaseTest => {
   let Database
   let dbInstance
 
-  let connectionString = 'mysql://some-data-uri/databaseSchema'
-  let tableNames = [{ TABLE_NAME: 'accounts' }, { TABLE_NAME: 'users' }, { TABLE_NAME: 'tokens' }]
+  const connectionString = 'mysql://some-data-uri/databaseSchema'
+  const tableNames = [{ TABLE_NAME: 'accounts' }, { TABLE_NAME: 'users' }, { TABLE_NAME: 'tokens' }]
 
   databaseTest.beforeEach(t => {
     sandbox = Sinon.sandbox.create()
@@ -98,16 +98,28 @@ Test('database', databaseTest => {
     })
 
     connectTest.test('throw error for invalid connection string', test => {
-      dbInstance.connect('invalid')
-        .then(() => {
-          test.fail('Should have thrown error')
-          test.end()
-        })
-        .catch(err => {
-          test.notOk(knexStub.called)
-          test.equal(err.message, 'Invalid database type in database URI')
-          test.end()
-        })
+      try {
+        dbInstance.connect('mysql://some-data-uri')
+        test.fail('Should have thrown error')
+        test.end()
+      } catch (e) {
+        test.notOk(knexStub.called)
+        test.equal(e.message, 'Invalid database type in database URI')
+        test.end()
+      }
+
+      // dbInstance.connect('invalid')
+      //   .then((r) => {
+      //     console.log('r is', r)
+      //     test.fail('Should have thrown error')
+      //     test.end()
+      //   })
+      //   .catch(err => {
+      //     console.log("ALSDIJ")
+      //     test.notOk(knexStub.called)
+      //     test.equal(err.message, 'Invalid database type in database URI')
+      //     test.end()
+      //   })
     })
 
     connectTest.test('throw error for unsupported database type in connection string', test => {
@@ -152,14 +164,14 @@ Test('database', databaseTest => {
 
   databaseTest.test('known table property should', tablePropTest => {
     tablePropTest.test('create new query object for known table', test => {
-      let tableName = tableNames[0].TABLE_NAME
+      const tableName = tableNames[0].TABLE_NAME
 
-      let obj = {}
+      const obj = {}
       tableStub.returns(obj)
 
       dbInstance.connect(connectionString)
         .then(() => {
-          let table = dbInstance[tableName]
+          const table = dbInstance[tableName]
           test.equal(table, obj)
           test.ok(tableStub.calledWith(tableName, knexConnStub))
           test.end()
@@ -219,14 +231,14 @@ Test('database', databaseTest => {
 
   databaseTest.test('from should', fromTest => {
     fromTest.test('create a new knex object for specified table', test => {
-      let tableName = 'table'
+      const tableName = 'table'
 
-      let obj = {}
+      const obj = {}
       tableStub.returns(obj)
 
       dbInstance.connect(connectionString)
         .then(() => {
-          let fromTable = dbInstance.from(tableName)
+          const fromTable = dbInstance.from(tableName)
           test.equal(fromTable, obj)
           test.ok(tableStub.calledWith(tableName, knexConnStub))
           test.end()
@@ -234,9 +246,9 @@ Test('database', databaseTest => {
     })
 
     fromTest.test('throw error if database not connected', test => {
-      let tableName = 'table'
+      const tableName = 'table'
 
-      let obj = {}
+      const obj = {}
       tableStub.returns(obj)
 
       try {
