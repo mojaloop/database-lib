@@ -136,7 +136,7 @@ Test('database', databaseTest => {
     })
 
     connectTest.test('throw error if database type not supported for listing tables', test => {
-      delete dbInstance._listTableQueries['mysql']
+      delete dbInstance._listTableQueries.mysql
       dbInstance.connect(connectionString)
         .then(() => {
           test.fail('Should have thrown error')
