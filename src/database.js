@@ -1,13 +1,7 @@
 'use strict'
 
 const Knex = require('knex')
-const P = require('bluebird')
 const Table = require('./table')
-
-const {
-  parseDatabaseType,
-  parseDatabaseSchema
-} = require('./utils')
 
 class Database {
   constructor () {
@@ -16,8 +10,11 @@ class Database {
     this._schema = null
 
     this._listTableQueries = {
-      mysql: (k) => {
-        return k('information_schema.tables').where('TABLE_SCHEMA', this._schema).select('TABLE_NAME').then(rows => rows.map(r => r.TABLE_NAME))
+      mysql: (knex) => {
+        return knex('information_schema.tables').where('TABLE_SCHEMA', this._schema).select('TABLE_NAME').then(rows => rows.map(r => r.TABLE_NAME))
+      },
+      pg: (knex) => {
+        return knex('pg_catalog.pg_tables').where({ schemaname: 'public' }).select('tablename').then(rows => rows.map(r => r.tablename))
       }
     }
   }
@@ -29,26 +26,29 @@ class Database {
     return this._knex
   }
 
-  connect (connectionString) {
+  async connect (config) {
     if (!this._knex) {
-      this._schema = parseDatabaseSchema(connectionString)
-      return configureKnex(connectionString).then(knex => {
-        this._knex = knex
-        return this._listTables().then(tables => {
-          this._tables = tables
-          this._setTableProperties()
+      if (config.connection.database) {
+        this._schema = config.connection.database
+        return configureKnex(config).then(knex => {
+          this._knex = knex
+          return this._listTables().then(tables => {
+            this._tables = tables
+            this._setTableProperties()
+          })
         })
-      })
+      } else {
+        throw new Error('Invalid database schema in database config')
+      }
     }
-    return P.resolve(null)
+    return null
   }
 
-  disconnect () {
+  async disconnect () {
     if (this._knex) {
       this._removeTableProperties()
       this._tables = []
-
-      this._knex.destroy()
+      await this._knex.destroy()
       this._knex = null
     }
   }
@@ -85,20 +85,8 @@ class Database {
   }
 }
 
-const configureKnex = (connectionString) => {
-  return new P((resolve, reject) => {
-    const knexConfig = {
-      mysql: { client: 'mysql' }
-    }
-
-    const dbType = parseDatabaseType(connectionString)
-    if (!knexConfig[dbType]) {
-      reject(new Error('Invalid database type in database URI'))
-    } else {
-      const commonConfig = { connection: connectionString }
-      resolve(Knex(Object.assign(commonConfig, knexConfig[dbType])))
-    }
-  })
+const configureKnex = async (config) => {
+  return Knex(config)
 }
 
 module.exports = Database

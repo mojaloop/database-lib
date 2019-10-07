@@ -9,13 +9,48 @@ Shared database code for central services
 
 Contents:
 
-- [Deployment](#deployment)
+- [Usage](#usage)
 - [Logging](#logging)
 - [Tests](#tests)
 
-## Deployment
-
-TBA
+## Usage
+The library supports both MySQL and Postgres.
+To use the library you can use the following configurations:
+```javascript 1.8
+const connectionConfig = {
+    client: 'mysql', //or 'pg' for postgres
+    connection: {
+      host: 'some-data-uri',
+      port: '9999',
+      user: 'user',
+      password: 'password',
+      database: 'databaseSchema'
+    },
+    pool: {
+      // minimum size
+      min: 2,
+      // maximum size
+      max: 10,
+      // acquire promises are rejected after this many milliseconds
+      // if a resource cannot be acquired
+      acquireTimeoutMillis: 30000,
+      // create operations are cancelled after this many milliseconds
+      // if a resource cannot be acquired
+      createTimeoutMillis: 3000,
+      // destroy operations are awaited for at most this many milliseconds
+      // new resources will be created after this timeout
+      destroyTimeoutMillis: 5000,
+      // free resouces are destroyed after this many milliseconds
+      idleTimeoutMillis: 30000,
+      // how often to check for idle resources to destroy
+      reapIntervalMillis: 1000,
+      // long long to idle after failed create before trying again
+      createRetryIntervalMillis: 200
+      // ping: function (conn, cb) { conn.query('SELECT 1', cb) }
+    },
+    debug: false
+  }
+```
 
 ## Environmental variables
 
