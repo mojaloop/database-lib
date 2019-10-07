@@ -29,7 +29,7 @@
     "audit:check": "SHELL=sh check-audit"
   },
   "dependencies": {
-    "bluebird": "3.5.5",
+    "bluebird": "3.7.0",
     "knex": "0.19.2",
     "lodash": "4.17.15",
     "mysql": "2.17.1",
