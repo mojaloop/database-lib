@@ -8,7 +8,7 @@ const Utils = require('./utils.js')
 const defaultConfig = {
   connection: {
     host: 'localhost',
-    port: 3306,
+    port: 3306
   },
   pool: {
     min: 2,
@@ -46,17 +46,16 @@ class Database {
     return this._knex
   }
 
-
   /**
    * @function connect
-   * 
+   *
    * @description Connect to the database given the config object. Returns null if database is already connected.
-   * 
+   *
    * @params {Object} config - The knex connection object. For more information see: http://knexjs.org/#Installation-client
-   * 
+   *
    * @returns null - if database is already connected.
-   * @returns void 
-   * 
+   * @returns void
+   *
    * @throws {Error} - if Database scheme is invalid
    */
   async connect (config) {
@@ -64,8 +63,8 @@ class Database {
       return null
     }
 
-    if (typeof config === "string") {
-      console.warn('`Database.connect()` using deprecated string config. Please ugrade this to use the knex config object.')
+    if (typeof config === 'string') {
+      console.warn('`Database.connect()` called using deprecated string config. Please ugrade this to use the knex config object.')
       config = Utils.buildDefaultConfig(defaultConfig, config)
     }
 
@@ -123,6 +122,5 @@ class Database {
 const configureKnex = async (config) => {
   return Knex(config)
 }
-
 
 module.exports = Database

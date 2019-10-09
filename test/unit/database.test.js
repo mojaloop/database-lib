@@ -90,7 +90,7 @@ Test('database', databaseTest => {
     getKnexTest.test('handle connection with a deprecated URI', async test => {
       // Arrange
       const URI = 'mysql://central_ledger:password@mysql-cl:3307/central_ledger_db'
-      
+
       // Act
       try {
         await dbInstance.connect(URI)
@@ -98,8 +98,7 @@ Test('database', databaseTest => {
 
         // Assert
         test.ok(knex)
-      }
-      catch (e) {
+      } catch (e) {
         test.fail('Error thrown')
       }
 
@@ -109,7 +108,7 @@ Test('database', databaseTest => {
     getKnexTest.test('should fail if the config.connection object is undefined', async test => {
       // Arrange
       const config = {}
-      
+
       // Act
       try {
         await dbInstance.connect(config)
@@ -119,7 +118,7 @@ Test('database', databaseTest => {
         // Assert
         test.equal(e.message, 'Invalid database schema in database config')
       }
-      
+
       test.end()
     })
 
