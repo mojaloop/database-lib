@@ -2,6 +2,7 @@
 
 const Knex = require('knex')
 const Table = require('./table')
+const Utils = require('./utils.js')
 
 /* Default config to fall back to when using deprecated URI connection string */
 const defaultConfig = {
@@ -54,7 +55,7 @@ class Database {
    * @params {Object} config - The knex connection object. For more information see: http://knexjs.org/#Installation-client
    * 
    * @returns null - if database is already connected.
-   * @returs void 
+   * @returns void 
    * 
    * @throws {Error} - if Database scheme is invalid
    */
@@ -65,27 +66,17 @@ class Database {
 
     if (typeof config === "string") {
       console.warn('`Database.connect()` using deprecated string config. Please ugrade this to use the knex config object.')
-      config = buildDefaultConfig(defaultConfig, config)
+      config = Utils.buildDefaultConfig(defaultConfig, config)
     }
 
     if (!config || !config.connection || !config.connection.database) {
       throw new Error('Invalid database schema in database config')
     }
 
-
-    if (config.connection.database) {
-      this._schema = config.connection.database
-      return configureKnex(config).then(knex => {
-        this._knex = knex
-        return this._listTables().then(tables => {
-          this._tables = tables
-          this._setTableProperties()
-        })
-      })
-    } else {
-      throw new Error('Invalid database schema in database config')
-    }
-    
+    this._schema = config.connection.database
+    this._knex = await configureKnex(config)
+    this._tables = await this._listTables()
+    await this._setTableProperties()
   }
 
   async disconnect () {
