@@ -3,6 +3,25 @@
 const Knex = require('knex')
 const Table = require('./table')
 
+/* Default config to fall back to when using deprecated URI connection string */
+const defaultConfig = {
+  connection: {
+    host: 'localhost',
+    port: 3306,
+  },
+  pool: {
+    min: 2,
+    max: 10,
+    acquireTimeoutMillis: 30000,
+    createTimeoutMillis: 3000,
+    destroyTimeoutMillis: 5000,
+    idleTimeoutMillis: 30000,
+    reapIntervalMillis: 1000,
+    createRetryIntervalMillis: 200
+  },
+  debug: false
+}
+
 class Database {
   constructor () {
     this._knex = null
@@ -26,22 +45,47 @@ class Database {
     return this._knex
   }
 
+
+  /**
+   * @function connect
+   * 
+   * @description Connect to the database given the config object. Returns null if database is already connected.
+   * 
+   * @params {Object} config - The knex connection object. For more information see: http://knexjs.org/#Installation-client
+   * 
+   * @returns null - if database is already connected.
+   * @returs void 
+   * 
+   * @throws {Error} - if Database scheme is invalid
+   */
   async connect (config) {
-    if (!this._knex) {
-      if (config.connection.database) {
-        this._schema = config.connection.database
-        return configureKnex(config).then(knex => {
-          this._knex = knex
-          return this._listTables().then(tables => {
-            this._tables = tables
-            this._setTableProperties()
-          })
-        })
-      } else {
-        throw new Error('Invalid database schema in database config')
-      }
+    if (this._knex) {
+      return null
     }
-    return null
+
+    if (typeof config === "string") {
+      console.warn('`Database.connect()` using deprecated string config. Please ugrade this to use the knex config object.')
+      config = buildDefaultConfig(defaultConfig, config)
+    }
+
+    if (!config || !config.connection || !config.connection.database) {
+      throw new Error('Invalid database schema in database config')
+    }
+
+
+    if (config.connection.database) {
+      this._schema = config.connection.database
+      return configureKnex(config).then(knex => {
+        this._knex = knex
+        return this._listTables().then(tables => {
+          this._tables = tables
+          this._setTableProperties()
+        })
+      })
+    } else {
+      throw new Error('Invalid database schema in database config')
+    }
+    
   }
 
   async disconnect () {
@@ -88,5 +132,6 @@ class Database {
 const configureKnex = async (config) => {
   return Knex(config)
 }
+
 
 module.exports = Database
