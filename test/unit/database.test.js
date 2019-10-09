@@ -87,6 +87,25 @@ Test('database', databaseTest => {
       }
     })
 
+    getKnexTest.test('handle connection with a deprecated URI', async test => {
+      // Arrange
+      const URI = 'mysql://central_ledger:password@mysql-cl:3307/central_ledger_db'
+      
+      // Act
+      try {
+        await dbInstance.connect(URI)
+        const knex = await dbInstance.getKnex()
+
+        // Assert
+        test.ok(knex)
+      }
+      catch (e) {
+        test.fail('Error thrown')
+      }
+
+      test.end()
+    })
+
     getKnexTest.test('throw error when database is not connected', test => {
       try {
         dbInstance.getKnex()
