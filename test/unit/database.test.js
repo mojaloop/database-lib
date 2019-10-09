@@ -106,6 +106,23 @@ Test('database', databaseTest => {
       test.end()
     })
 
+    getKnexTest.test('should fail if the config.connection object is undefined', async test => {
+      // Arrange
+      const config = {}
+      
+      // Act
+      try {
+        await dbInstance.connect(config)
+
+        test.fail('Should have thrown error')
+      } catch (e) {
+        // Assert
+        test.equal(e.message, 'Invalid database schema in database config')
+      }
+      
+      test.end()
+    })
+
     getKnexTest.test('throw error when database is not connected', test => {
       try {
         dbInstance.getKnex()
