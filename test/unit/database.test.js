@@ -87,6 +87,19 @@ Test('database', databaseTest => {
       }
     })
 
+    getKnexTest.test('return the knex database object with mysql2', async (test) => {
+      knexConnStub.client = { config: { client: 'mysql2' } }
+      try {
+        await dbInstance.connect(connectionConfig)
+        const knex = await dbInstance.getKnex()
+        test.ok(knex)
+        test.end()
+      } catch (e) {
+        test.fail('Error thrown')
+        test.end()
+      }
+    })
+
     getKnexTest.test('handle connection with a deprecated URI', async test => {
       // Arrange
       const URI = 'mysql://central_ledger:password@mysql-cl:3307/central_ledger_db'
