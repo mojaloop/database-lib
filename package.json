@@ -37,7 +37,7 @@
   },
   "dependencies": {
     "@mojaloop/central-services-metrics": "8.3.0",
-    "knex": "0.20.4",
+    "knex": "0.20.7",
     "lodash": "4.17.15",
     "mysql": "2.17.1",
     "rc": "1.2.8"
