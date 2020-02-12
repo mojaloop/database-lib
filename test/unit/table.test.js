@@ -13,7 +13,7 @@ Test('table', tableTest => {
   let builderStub
 
   tableTest.beforeEach(t => {
-    sandbox = Sinon.sandbox.create()
+    sandbox = Sinon.createSandbox()
     knexStub = sandbox.stub()
     builderStub = sandbox.stub()
     knexStub.withArgs(tableName).returns(builderStub)
