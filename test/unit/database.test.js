@@ -50,7 +50,7 @@ Test('database', databaseTest => {
   const tableNames = [{ TABLE_NAME: 'accounts' }, { TABLE_NAME: 'users' }, { TABLE_NAME: 'tokens' }]
 
   databaseTest.beforeEach(t => {
-    sandbox = Sinon.sandbox.create()
+    sandbox = Sinon.createSandbox()
 
     knexConnStub = sandbox.stub()
     knexConnStub.destroy = sandbox.stub()

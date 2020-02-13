@@ -11,7 +11,7 @@ Test('migrations', migrationsTest => {
   let Migrator
 
   migrationsTest.beforeEach(t => {
-    sandbox = Sinon.sandbox.create()
+    sandbox = Sinon.createSandbox()
 
     knexConnStub = sandbox.stub()
     knexStub = sandbox.stub().returns(knexConnStub)
