@@ -3,6 +3,8 @@
 const Knex = require('knex')
 const Table = require('./table')
 const Utils = require('./utils.js')
+const Metrics = require('@mojaloop/central-services-metrics')
+const Setup = require('../src/shared/setup')
 
 /* Default config to fall back to when using deprecated URI connection string */
 const defaultConfig = {
@@ -70,6 +72,27 @@ class Database {
 
     if (!config || !config.connection || !config.connection.database) {
       throw new Error('Invalid database schema in database config')
+    }
+
+    if (!Metrics.isInitiated()) {
+      if (!config.INSTRUMENTATION) {
+        config.INSTRUMENTATION = {
+          METRICS: {
+            DISABLED: false,
+            labels: {
+              fspId: '*'
+            },
+            config: {
+              timeout: 5000,
+              prefix: 'moja_csdb_',
+              defaultLabels: {
+                serviceName: 'moja_central-services-database'
+              }
+            }
+          }
+        }
+      }
+      Setup.initializeInstrumentation()
     }
 
     this._schema = config.connection.database
