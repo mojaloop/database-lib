@@ -3,7 +3,6 @@
 const src = '../../src'
 const Test = require('tapes')(require('tape'))
 const Sinon = require('sinon')
-const P = require('bluebird')
 const Table = require(`${src}/table`)
 
 Test('table', tableTest => {
@@ -14,7 +13,7 @@ Test('table', tableTest => {
   let builderStub
 
   tableTest.beforeEach(t => {
-    sandbox = Sinon.sandbox.create()
+    sandbox = Sinon.createSandbox()
     knexStub = sandbox.stub()
     builderStub = sandbox.stub()
     knexStub.withArgs(tableName).returns(builderStub)
@@ -32,7 +31,7 @@ Test('table', tableTest => {
       const fields = { id: 1 }
       const inserted = { id: 1, accountId: 1 }
 
-      builderStub.insert = sandbox.stub().returns(P.resolve([inserted]))
+      builderStub.insert = sandbox.stub().returns(Promise.resolve([inserted]))
 
       table.insert(fields)
         .then(record => {
@@ -45,7 +44,7 @@ Test('table', tableTest => {
     insertTest.test('throw error if no record returned from insert', test => {
       const fields = { id: 1 }
 
-      builderStub.insert = sandbox.stub().returns(P.resolve([]))
+      builderStub.insert = sandbox.stub().returns(Promise.resolve([]))
 
       table.insert(fields)
         .then(record => {
@@ -69,7 +68,7 @@ Test('table', tableTest => {
       const updated = { id: 1, name: 'test' }
 
       const updateStub = sandbox.stub()
-      updateStub.returns(P.resolve([updated]))
+      updateStub.returns(Promise.resolve([updated]))
       builderStub.where = sandbox.stub().returns({ update: updateStub })
 
       table.update(criteria, fields)
@@ -87,7 +86,7 @@ Test('table', tableTest => {
       const updated = [{ id: 1, accountId: 3, name: 'test' }, { id: 2, accountId: 3, name: 'test' }]
 
       const updateStub = sandbox.stub()
-      updateStub.returns(P.resolve(updated))
+      updateStub.returns(Promise.resolve(updated))
       builderStub.where = sandbox.stub().returns({ update: updateStub })
 
       table.update(criteria, fields)
@@ -104,7 +103,7 @@ Test('table', tableTest => {
       const fields = { name: 'test' }
 
       const updateStub = sandbox.stub()
-      updateStub.returns(P.resolve([]))
+      updateStub.returns(Promise.resolve([]))
       builderStub.where = sandbox.stub().returns({ update: updateStub })
 
       table.update(criteria, fields)
@@ -119,7 +118,7 @@ Test('table', tableTest => {
       const fields = { name: 'test' }
       const updated = [{ id: 1, name: 'test' }, { id: 2, name: 'test' }]
 
-      builderStub.update = sandbox.stub().returns(P.resolve(updated))
+      builderStub.update = sandbox.stub().returns(Promise.resolve(updated))
 
       table.update({}, fields)
         .then(records => {
@@ -133,7 +132,7 @@ Test('table', tableTest => {
       const fields = { name: 'test' }
       const updated = [{ id: 1, name: 'test' }, { id: 2, name: 'test' }]
 
-      builderStub.update = sandbox.stub().returns(P.resolve(updated))
+      builderStub.update = sandbox.stub().returns(Promise.resolve(updated))
 
       table.update(null, fields)
         .then(records => {
@@ -151,7 +150,7 @@ Test('table', tableTest => {
       const criteria = { name: 'test' }
       const found = [{ id: 1, name: 'test' }, { id: 2, name: 'test2' }]
 
-      builderStub.where = sandbox.stub().returns(P.resolve(found))
+      builderStub.where = sandbox.stub().returns(Promise.resolve(found))
 
       table.find(criteria)
         .then(records => {
@@ -166,7 +165,7 @@ Test('table', tableTest => {
       const criteria = { name: 'test' }
       const found = [{ id: 1, name: 'test' }, { id: 2, name: 'test2' }]
 
-      const orderByStub = sandbox.stub().returns(P.resolve(found))
+      const orderByStub = sandbox.stub().returns(Promise.resolve(found))
       builderStub.where = sandbox.stub().returns({ orderBy: orderByStub })
 
       table.find(criteria, options)
@@ -182,7 +181,7 @@ Test('table', tableTest => {
       const criteria = { 'id >=': 1 }
       const found = [{ id: 1, name: 'test' }, { id: 2, name: 'test2' }]
 
-      builderStub.where = sandbox.stub().returns(P.resolve(found))
+      builderStub.where = sandbox.stub().returns(Promise.resolve(found))
 
       table.find(criteria)
         .then(records => {
@@ -196,7 +195,7 @@ Test('table', tableTest => {
       const criteria = { '': 1 }
       const found = [{ id: 1, name: 'test' }, { id: 2, name: 'test2' }]
 
-      builderStub.where = sandbox.stub().returns(P.resolve(found))
+      builderStub.where = sandbox.stub().returns(Promise.resolve(found))
 
       table.find(criteria)
         .then(records => {
@@ -210,7 +209,7 @@ Test('table', tableTest => {
       const criteria = { 'id !=': 1 }
       const found = [{ id: 1, name: 'test' }, { id: 2, name: 'test2' }]
 
-      builderStub.where = sandbox.stub().returns(P.resolve(found))
+      builderStub.where = sandbox.stub().returns(Promise.resolve(found))
 
       table.find(criteria)
         .then(records => {
@@ -224,7 +223,7 @@ Test('table', tableTest => {
       const criteria = { id: [1, 2] }
       const found = [{ id: 1, name: 'test' }, { id: 2, name: 'test2' }]
 
-      builderStub.whereIn = sandbox.stub().returns(P.resolve(found))
+      builderStub.whereIn = sandbox.stub().returns(Promise.resolve(found))
 
       table.find(criteria)
         .then(records => {
@@ -239,7 +238,7 @@ Test('table', tableTest => {
       const found = [{ id: 1, name: 'test', num: 6 }, { id: 2, name: 'test2', num: 10 }]
 
       const whereStub = sandbox.stub()
-      whereStub.returns(P.resolve(found))
+      whereStub.returns(Promise.resolve(found))
       builderStub.whereIn = sandbox.stub().returns({ where: whereStub })
 
       table.find(criteria)
@@ -254,7 +253,7 @@ Test('table', tableTest => {
     findTest.test('handle empty criteria', test => {
       const found = [{ id: 1, name: 'test' }, { id: 2, name: 'test2' }]
 
-      knexStub.withArgs(tableName).returns(P.resolve(found))
+      knexStub.withArgs(tableName).returns(Promise.resolve(found))
 
       table.find({})
         .then(records => {
@@ -266,7 +265,7 @@ Test('table', tableTest => {
     findTest.test('handle null criteria', test => {
       const found = [{ id: 1, name: 'test' }, { id: 2, name: 'test2' }]
 
-      knexStub.withArgs(tableName).returns(P.resolve(found))
+      knexStub.withArgs(tableName).returns(Promise.resolve(found))
 
       table.find(null)
         .then(records => {
@@ -280,7 +279,7 @@ Test('table', tableTest => {
       const criteria = { name: 'test' }
       const found = [{ id: 1, name: 'test' }, { id: 2, name: 'test2' }]
 
-      const orderByStub = sandbox.stub().returns(P.resolve(found))
+      const orderByStub = sandbox.stub().returns(Promise.resolve(found))
       builderStub.where = sandbox.stub().returns({ orderBy: orderByStub })
 
       table.find(criteria, options)
@@ -297,7 +296,7 @@ Test('table', tableTest => {
       const criteria = { name: 'test' }
       const found = [{ id: 1, name: 'test' }, { id: 2, name: 'test2' }]
 
-      builderStub.where = sandbox.stub().returns(P.resolve(found))
+      builderStub.where = sandbox.stub().returns(Promise.resolve(found))
 
       table.find(criteria, options)
         .then(records => {
@@ -312,7 +311,7 @@ Test('table', tableTest => {
       const criteria = { name: 'test' }
       const found = [{ id: 1, name: 'test' }, { id: 2, name: 'test2' }]
 
-      builderStub.where = sandbox.stub().returns(P.resolve(found))
+      builderStub.where = sandbox.stub().returns(Promise.resolve(found))
 
       table.find(criteria, options)
         .then(records => {
@@ -330,7 +329,7 @@ Test('table', tableTest => {
       const criteria = { id: 1 }
       const found = { id: 1, name: 'test' }
 
-      builderStub.where = sandbox.stub().returns(P.resolve([found]))
+      builderStub.where = sandbox.stub().returns(Promise.resolve([found]))
 
       table.findOne(criteria)
         .then(record => {
@@ -343,7 +342,7 @@ Test('table', tableTest => {
     findOneTest.test('return null if no record found', test => {
       const criteria = { id: 1 }
 
-      builderStub.where = sandbox.stub().returns(P.resolve([]))
+      builderStub.where = sandbox.stub().returns(Promise.resolve([]))
 
       table.findOne(criteria)
         .then(record => {
@@ -362,7 +361,7 @@ Test('table', tableTest => {
       const deleted = { id: 1, name: 'test' }
 
       const delStub = sandbox.stub()
-      delStub.returns(P.resolve([deleted]))
+      delStub.returns(Promise.resolve([deleted]))
       builderStub.where = sandbox.stub().returns({ del: delStub })
 
       table.destroy(criteria)
@@ -379,7 +378,7 @@ Test('table', tableTest => {
       const deleted = [{ id: 1, accountId: 3, name: 'test' }, { id: 2, accountId: 3, name: 'test' }]
 
       const delStub = sandbox.stub()
-      delStub.returns(P.resolve(deleted))
+      delStub.returns(Promise.resolve(deleted))
       builderStub.where = sandbox.stub().returns({ del: delStub })
 
       table.destroy(criteria)
@@ -395,7 +394,7 @@ Test('table', tableTest => {
       const criteria = { id: 1 }
 
       const delStub = sandbox.stub()
-      delStub.returns(P.resolve([]))
+      delStub.returns(Promise.resolve([]))
       builderStub.where = sandbox.stub().returns({ del: delStub })
 
       table.destroy(criteria)
@@ -409,7 +408,7 @@ Test('table', tableTest => {
     destroyTest.test('handle empty criteria', test => {
       const deleted = [{ id: 1, name: 'test' }, { id: 2, name: 'test' }]
 
-      builderStub.del = sandbox.stub().returns(P.resolve(deleted))
+      builderStub.del = sandbox.stub().returns(Promise.resolve(deleted))
 
       table.destroy({})
         .then(records => {
@@ -422,7 +421,7 @@ Test('table', tableTest => {
     destroyTest.test('handle null criteria', test => {
       const deleted = [{ id: 1, name: 'test' }, { id: 2, name: 'test' }]
 
-      builderStub.del = sandbox.stub().returns(P.resolve(deleted))
+      builderStub.del = sandbox.stub().returns(Promise.resolve(deleted))
 
       table.destroy(null)
         .then(records => {
@@ -437,7 +436,7 @@ Test('table', tableTest => {
 
   tableTest.test('truncate should', truncateTest => {
     truncateTest.test('call truncate method on builder', test => {
-      builderStub.truncate = sandbox.stub().returns(P.resolve(null))
+      builderStub.truncate = sandbox.stub().returns(Promise.resolve(null))
 
       table.truncate()
         .then(() => {
@@ -454,7 +453,7 @@ Test('table', tableTest => {
       const countRecords = [{ count: '5' }]
 
       const countStub = sandbox.stub()
-      countStub.returns(P.resolve(countRecords))
+      countStub.returns(Promise.resolve(countRecords))
       builderStub.where = sandbox.stub().returns({ count: countStub })
 
       table.count({ 'id >': 1 }, '*')
@@ -469,7 +468,7 @@ Test('table', tableTest => {
     countTest.test('handle empty criteria', test => {
       const countRecords = [{ count: '5' }]
 
-      builderStub.count = sandbox.stub().returns(P.resolve(countRecords))
+      builderStub.count = sandbox.stub().returns(Promise.resolve(countRecords))
 
       table.count({}, '*')
         .then(count => {
@@ -487,7 +486,7 @@ Test('table', tableTest => {
       const maxRecords = [{ max: 5 }]
 
       const maxStub = sandbox.stub()
-      maxStub.returns(P.resolve(maxRecords))
+      maxStub.returns(Promise.resolve(maxRecords))
       builderStub.where = sandbox.stub().returns({ max: maxStub })
 
       table.max({ 'id >': 1 }, 'col')
@@ -502,7 +501,7 @@ Test('table', tableTest => {
     maxTest.test('handle empty criteria', test => {
       const maxRecords = [{ max: 5 }]
 
-      builderStub.max = sandbox.stub().returns(P.resolve(maxRecords))
+      builderStub.max = sandbox.stub().returns(Promise.resolve(maxRecords))
 
       table.max({}, 'col')
         .then(max => {
@@ -518,7 +517,7 @@ Test('table', tableTest => {
   tableTest.test('query function should', queryFuncTest => {
     queryFuncTest.test('pass builder object to callback', test => {
       const found = { id: 1 }
-      const cbStub = sandbox.stub().returns(P.resolve(found))
+      const cbStub = sandbox.stub().returns(Promise.resolve(found))
 
       table.query(cbStub)
         .then(result => {

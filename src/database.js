@@ -1,13 +1,27 @@
 'use strict'
 
 const Knex = require('knex')
-const P = require('bluebird')
 const Table = require('./table')
+const Utils = require('./utils.js')
 
-const {
-  parseDatabaseType,
-  parseDatabaseSchema
-} = require('./utils')
+/* Default config to fall back to when using deprecated URI connection string */
+const defaultConfig = {
+  connection: {
+    host: 'localhost',
+    port: 3306
+  },
+  pool: {
+    min: 2,
+    max: 10,
+    acquireTimeoutMillis: 30000,
+    createTimeoutMillis: 3000,
+    destroyTimeoutMillis: 5000,
+    idleTimeoutMillis: 30000,
+    reapIntervalMillis: 1000,
+    createRetryIntervalMillis: 200
+  },
+  debug: false
+}
 
 class Database {
   constructor () {
@@ -16,8 +30,11 @@ class Database {
     this._schema = null
 
     this._listTableQueries = {
-      mysql: (k) => {
-        return k('information_schema.tables').where('TABLE_SCHEMA', this._schema).select('TABLE_NAME').then(rows => rows.map(r => r.TABLE_NAME))
+      mysql: (knex) => {
+        return knex('information_schema.tables').where('TABLE_SCHEMA', this._schema).select('TABLE_NAME').then(rows => rows.map(r => r.TABLE_NAME))
+      },
+      pg: (knex) => {
+        return knex('pg_catalog.pg_tables').where({ schemaname: 'public' }).select('tablename').then(rows => rows.map(r => r.tablename))
       }
     }
   }
@@ -29,26 +46,43 @@ class Database {
     return this._knex
   }
 
-  connect (connectionString) {
-    if (!this._knex) {
-      this._schema = parseDatabaseSchema(connectionString)
-      return configureKnex(connectionString).then(knex => {
-        this._knex = knex
-        return this._listTables().then(tables => {
-          this._tables = tables
-          this._setTableProperties()
-        })
-      })
+  /**
+   * @function connect
+   *
+   * @description Connect to the database given the config object. Returns null if database is already connected.
+   *
+   * @params {Object} config - The knex connection object. For more information see: http://knexjs.org/#Installation-client
+   *
+   * @returns null - if database is already connected.
+   * @returns void
+   *
+   * @throws {Error} - if Database scheme is invalid
+   */
+  async connect (config) {
+    if (this._knex) {
+      return null
     }
-    return P.resolve(null)
+
+    if (typeof config === 'string') {
+      console.warn('`Database.connect()` called using deprecated string config. Please ugrade this to use the knex config object.')
+      config = Utils.buildDefaultConfig(defaultConfig, config)
+    }
+
+    if (!config || !config.connection || !config.connection.database) {
+      throw new Error('Invalid database schema in database config')
+    }
+
+    this._schema = config.connection.database
+    this._knex = await configureKnex(config)
+    this._tables = await this._listTables()
+    await this._setTableProperties()
   }
 
-  disconnect () {
+  async disconnect () {
     if (this._knex) {
       this._removeTableProperties()
       this._tables = []
-
-      this._knex.destroy()
+      await this._knex.destroy()
       this._knex = null
     }
   }
@@ -85,20 +119,8 @@ class Database {
   }
 }
 
-const configureKnex = (connectionString) => {
-  return new P((resolve, reject) => {
-    const knexConfig = {
-      mysql: { client: 'mysql' }
-    }
-
-    const dbType = parseDatabaseType(connectionString)
-    if (!knexConfig[dbType]) {
-      reject(new Error('Invalid database type in database URI'))
-    } else {
-      const commonConfig = { connection: connectionString }
-      resolve(Knex(Object.assign(commonConfig, knexConfig[dbType])))
-    }
-  })
+const configureKnex = async (config) => {
+  return Knex(config)
 }
 
 module.exports = Database

@@ -2,7 +2,6 @@
 
 const Test = require('tapes')(require('tape'))
 const Sinon = require('sinon')
-const P = require('bluebird')
 const Proxyquire = require('proxyquire')
 
 Test('migrations', migrationsTest => {
@@ -12,7 +11,7 @@ Test('migrations', migrationsTest => {
   let Migrator
 
   migrationsTest.beforeEach(t => {
-    sandbox = Sinon.sandbox.create()
+    sandbox = Sinon.createSandbox()
 
     knexConnStub = sandbox.stub()
     knexStub = sandbox.stub().returns(knexConnStub)
@@ -29,9 +28,9 @@ Test('migrations', migrationsTest => {
 
   migrationsTest.test('migrate should', migrateTest => {
     migrateTest.test('run migrations and destroy Knex connection on completion', test => {
-      const latestStub = sandbox.stub().returns(P.resolve(null))
-      const seedStub = sandbox.stub().returns(P.resolve(null))
-      const destroyStub = sandbox.stub().returns(P.resolve(null))
+      const latestStub = sandbox.stub().returns(Promise.resolve(null))
+      const seedStub = sandbox.stub().returns(Promise.resolve(null))
+      const destroyStub = sandbox.stub().returns(Promise.resolve(null))
       knexConnStub.migrate = { latest: latestStub }
       knexConnStub.seed = { run: seedStub }
       knexConnStub.destroy = destroyStub
