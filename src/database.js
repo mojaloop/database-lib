@@ -4,7 +4,7 @@ const Knex = require('knex')
 const Table = require('./table')
 const Utils = require('./utils.js')
 const Metrics = require('@mojaloop/central-services-metrics')
-const Setup = require('../src/shared/setup')
+const knexExporter = require('knex-prometheus-exporter')
 
 /* Default config to fall back to when using deprecated URI connection string */
 const defaultConfig = {
@@ -74,29 +74,10 @@ class Database {
       throw new Error('Invalid database schema in database config')
     }
 
-    if (!Metrics.isInitiated()) {
-      if (!config.INSTRUMENTATION) {
-        config.INSTRUMENTATION = {
-          METRICS: {
-            DISABLED: false,
-            labels: {
-              fspId: '*'
-            },
-            config: {
-              timeout: 5000,
-              prefix: 'moja_csdb_',
-              defaultLabels: {
-                serviceName: 'moja_central-services-database'
-              }
-            }
-          }
-        }
-      }
-      Setup.initializeInstrumentation()
-    }
-
     this._schema = config.connection.database
-    this._knex = await configureKnex(config)
+    const { knex, exporter } = await configureKnex(config)
+    this._knex = knex
+    this._exporter = exporter
     this._tables = await this._listTables()
     await this._setTableProperties()
   }
@@ -107,6 +88,9 @@ class Database {
       this._tables = []
       await this._knex.destroy()
       this._knex = null
+    }
+    if (this._exporter) {
+      this._exporter.off()
     }
   }
 
@@ -143,7 +127,18 @@ class Database {
 }
 
 const configureKnex = async (config) => {
-  return Knex(config)
+  const knex = Knex(config)
+  let exporter = null
+  if (Metrics.isInitiated()) {
+    const register = Metrics.getDefaultRegister()
+    const { labels, config: { prefix } } = Metrics.getOptions().METRICS
+    exporter = knexExporter(knex, {
+      register,
+      labels,
+      prefix
+    })
+  }
+  return { knex, exporter }
 }
 
 module.exports = Database

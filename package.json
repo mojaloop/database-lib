@@ -1,6 +1,6 @@
 {
   "name": "@mojaloop/central-services-database",
-  "version": "9.1.1",
+  "version": "9.2.0",
   "description": "Shared database code for central services",
   "main": "src/index.js",
   "license": "Apache-2.0",
@@ -37,6 +37,7 @@
   },
   "dependencies": {
     "knex": "0.20.9",
+    "knex-prometheus-exporter": "2.1.0",
     "lodash": "4.17.15",
     "mysql": "2.18.1"
   },
@@ -52,6 +53,10 @@
     "tap-xunit": "2.4.1",
     "tape": "4.13.0",
     "tapes": "4.1.0"
+  },
+  "peerDependencies": {
+    "prom-client": "11.5.3",
+    "@mojaloop/central-services-metrics": "fil"
   },
   "publishConfig": {
     "registry": "https://registry.npmjs.org/"
