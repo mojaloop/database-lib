@@ -1,5 +1,5 @@
 {
-  "name": "@mojaloop/central-services-database",
+  "name": "@mojaloop/database-lib",
   "version": "10.7.0",
   "description": "Shared database code for central services",
   "main": "src/index.js",
@@ -9,7 +9,7 @@
   ],
   "repository": {
     "type": "git",
-    "url": "git+https://github.com/mojaloop/central-services-database.git"
+    "url": "git+https://github.com/mojaloop/database-lib.git"
   },
   "keywords": [
     "database",
