@@ -40,7 +40,7 @@
     "release": "standard-version --releaseCommitMessageFormat 'chore(release): {{currentTag}} [skip ci]'"
   },
   "dependencies": {
-    "knex": "0.95.5",
+    "knex": "2.4.0",
     "lodash": "4.17.21",
     "mysql": "2.18.1"
   },
