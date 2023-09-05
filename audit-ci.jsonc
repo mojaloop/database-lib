@@ -1,0 +1,14 @@
+{
+  "$schema": "https://github.com/IBM/audit-ci/raw/main/docs/schema.json",
+  // audit-ci supports reading JSON, JSONC, and JSON5 config files.
+  // Only use one of ["low": true, "moderate": true, "high": true, "critical": true]
+  "moderate": true,
+  "allowlist": [
+    "GHSA-pfrx-2q88-qq97",
+    "GHSA-4jv9-3563-23j3",
+    "GHSA-vh95-rmgr-6w4m",
+    "GHSA-xvch-5gv4-984h",
+    "GHSA-p8p7-x288-28g6",
+    "GHSA-72xf-g2v4-qvf3"
+  ]
+}

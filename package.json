@@ -33,8 +33,8 @@
     "test:xunit": "tape 'test/unit/**/*.test.js' | tap-xunit",
     "test:coverage": "nyc --reporter=lcov --reporter=text-summary tapes -- 'test/unit/**/**.test.js'",
     "test:coverage-check": "npm run test:coverage && nyc check-coverage",
-    "audit:resolve": "SHELL=sh resolve-audit --production",
-    "audit:check": "SHELL=sh check-audit --production",
+    "audit:fix": "npm audit fix",
+    "audit:check": "npx audit-ci --config ./audit-ci.jsonc",
     "dep:check": "npx ncu -e 2",
     "dep:update": "npx ncu -u",
     "release": "standard-version --releaseCommitMessageFormat 'chore(release): {{currentTag}} [skip ci]'"
@@ -45,10 +45,10 @@
     "mysql": "2.18.1"
   },
   "devDependencies": {
+    "audit-ci": "^6.6.1",
     "faucet": "0.0.1",
-    "nyc": "15.1.0",
-    "npm-audit-resolver": "2.3.0",
     "npm-check-updates": "11.5.11",
+    "nyc": "15.1.0",
     "pre-commit": "1.2.2",
     "proxyquire": "2.1.3",
     "sinon": "10.0.0",
