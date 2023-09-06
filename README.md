@@ -1,5 +1,5 @@
 # database-lib
-[![Git Commit](https://img.shields.io/github/last-commit/mojaloop/database-lib.svg?style=flat)](https://github.com/mojaloop/database-lib/commits/master)
+[![Git Commit](https://img.shields.io/github/last-commit/mojaloop/database-lib.svg?style=flat)](https://github.com/mojaloop/database-lib/commits/main)
 [![Git Releases](https://img.shields.io/github/release/mojaloop/database-lib.svg?style=flat)](https://github.com/mojaloop/database-lib/releases)
 [![Npm Version](https://img.shields.io/npm/v/@mojaloop/database-lib.svg?style=flat)](https://www.npmjs.com/package/@mojaloop/database-lib)
 [![NPM Vulnerabilities](https://img.shields.io/snyk/vulnerabilities/npm/@mojaloop/database-lib.svg?style=flat)](https://www.npmjs.com/package/@mojaloop/database-lib)
