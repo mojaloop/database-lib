@@ -465,7 +465,6 @@ workflows:
             branches:
               ignore:
                 - /feature*/
-                - /bugfix*/
       - test-lint:
           context: org-global
           requires:
