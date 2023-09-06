@@ -464,8 +464,7 @@ workflows:
               only: /.*/
             branches:
               ignore:
-                - /feature*/
-                - /bugfix*/
+                - main
       - test-lint:
           context: org-global
           requires:
@@ -526,7 +525,6 @@ workflows:
           context: org-global
           requires:
             - pr-tools/pr-title-check
-            - test-dependencies
             - test-lint
             - test-unit
             - test-coverage
