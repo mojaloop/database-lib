@@ -464,7 +464,7 @@ workflows:
               only: /.*/
             branches:
               ignore:
-                - /feature*/
+                - main
       - test-lint:
           context: org-global
           requires:
