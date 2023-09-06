@@ -520,7 +520,7 @@ workflows:
               ignore:
                 - /feature*/
                 - /bugfix*/
-      # New commits to master release automatically
+      # New commits to main release automatically
       - release:
           context: org-global
           requires:
@@ -533,7 +533,7 @@ workflows:
           filters:
             branches:
               only:
-                - master
+                - main
                 - /release\/v.*/
       - github-release:
           context: org-global
@@ -542,7 +542,7 @@ workflows:
           filters:
             branches:
               only:
-                - master
+                - main
                 - /release\/v.*/
       - publish:
           context: org-global
