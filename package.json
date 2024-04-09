@@ -1,6 +1,6 @@
 {
   "name": "@mojaloop/database-lib",
-  "version": "11.0.3",
+  "version": "11.0.4",
   "description": "Shared database code for central services",
   "main": "src/index.js",
   "license": "Apache-2.0",
