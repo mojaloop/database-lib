@@ -45,6 +45,9 @@
     "lodash": "4.17.21",
     "mysql": "2.18.1"
   },
+  "overrides": {
+    "postcss": "6.2.1"
+  },
   "devDependencies": {
     "audit-ci": "^6.6.1",
     "npm-check-updates": "16.14.18",
