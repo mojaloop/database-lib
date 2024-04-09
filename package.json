@@ -46,7 +46,7 @@
     "mysql": "2.18.1"
   },
   "overrides": {
-    "postcss": "6.2.1"
+    "tar": "6.2.1"
   },
   "devDependencies": {
     "audit-ci": "^6.6.1",
