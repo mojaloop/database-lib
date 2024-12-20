@@ -2,6 +2,13 @@
 
 All notable changes to this project will be documented in this file. See [standard-version](https://github.com/conventional-changelog/standard-version) for commit guidelines.
 
+## [11.1.0](https://github.com/mojaloop/database-lib/compare/v11.0.6...v11.1.0) (2024-12-20)
+
+
+### Features
+
+* add maxPendingAcquire handling and related methods ([#165](https://github.com/mojaloop/database-lib/issues/165)) ([62f80a9](https://github.com/mojaloop/database-lib/commit/62f80a99b922a86d7a8b711c9d58f2ac89ac7d12))
+
 ### [11.0.6](https://github.com/mojaloop/database-lib/compare/v11.0.5...v11.0.6) (2024-06-26)
 
 ### [11.0.5](https://github.com/mojaloop/database-lib/compare/v11.0.4...v11.0.5) (2024-04-11)
