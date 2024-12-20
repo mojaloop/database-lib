@@ -1,6 +1,7 @@
 'use strict'
 
 const Knex = require('knex')
+const ErrorHandler = require('@mojaloop/central-services-error-handling')
 const Table = require('./table')
 const Utils = require('./utils.js')
 
@@ -73,6 +74,7 @@ class Database {
     }
 
     this._schema = config.connection.database
+    this._maxPendingAcquire = config.maxPendingAcquire
     this._knex = await configureKnex(config)
     this._tables = await this._listTables()
     await this._setTableProperties()
@@ -117,9 +119,25 @@ class Database {
     }
     return this._listTableQueries[dbType](this._knex)
   }
+
+  assertPendingAcquires () {
+    if (this._maxPendingAcquire && this._maxPendingAcquire < this._knex.client.pool.numPendingAcquires()) {
+      throw ErrorHandler.CreateFSPIOPError(
+        ErrorHandler.Enums.FSPIOPErrorCodes.SERVICE_CURRENTLY_UNAVAILABLE,
+        `DB Pool pending acquires ${this._knex.client.pool.numPendingAcquires()} > ${this._maxPendingAcquire}`
+      )
+    }
+  }
+
+  getPendingAcquires () {
+    if (!this._knex) {
+      throw new Error('The database must be connected to get the number of pending acquires')
+    }
+    return this._knex.client.pool.numPendingAcquires()
+  }
 }
 
-const configureKnex = async (config) => {
+const configureKnex = async ({ maxPendingAcquire, ...config }) => {
   return Knex(config)
 }
 
