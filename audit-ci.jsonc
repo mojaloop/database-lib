@@ -10,6 +10,7 @@
     "GHSA-xvch-5gv4-984h",
     "GHSA-p8p7-x288-28g6",
     "GHSA-72xf-g2v4-qvf3",
-    "GHSA-w5p7-h5w8-2hfq"
+    "GHSA-w5p7-h5w8-2hfq",
+    "GHSA-3xgq-45jj-v275" // pre-commit uses an old version of cross-spawn
   ]
 }

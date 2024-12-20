@@ -54,7 +54,7 @@ Test('database', databaseTest => {
 
     knexConnStub = sandbox.stub()
     knexConnStub.destroy = sandbox.stub()
-    knexConnStub.client = { config: { client: 'mysql' } }
+    knexConnStub.client = { config: { client: 'mysql' }, pool: { numPendingAcquires () {} } }
     knexConnStub.withArgs('information_schema.tables').returns({ where: sandbox.stub().withArgs('TABLE_SCHEMA', 'databaseSchema').returns({ select: sandbox.stub().withArgs('TABLE_NAME').returns(Promise.resolve(tableNames)) }) })
     knexConnStub.withArgs('pg_catalog.pg_tables').returns({ where: sandbox.stub().withArgs({ schemaname: 'public' }).returns({ select: sandbox.stub().withArgs('tablename').returns(Promise.resolve(tableNames)) }) })
 
@@ -311,6 +311,75 @@ Test('database', databaseTest => {
     })
 
     fromTest.end()
+  })
+
+  databaseTest.test('assertPendingAcquires should', assertPendingAcquiresTest => {
+    assertPendingAcquiresTest.test('throw error if pending acquires exceed maxPendingAcquire', async test => {
+      // Arrange
+      const maxPendingAcquire = 5
+      const config = { ...connectionConfig, maxPendingAcquire }
+      await dbInstance.connect(config)
+      sandbox.stub(dbInstance._knex.client.pool, 'numPendingAcquires').returns(6)
+
+      // Act & Assert
+      try {
+        dbInstance.assertPendingAcquires()
+        test.fail('Should have thrown error')
+      } catch (err) {
+        test.equal(err.httpStatusCode, 503, 'Max pending acquires exceeded http status code 503')
+        test.equal(err.message, `DB Pool pending acquires 6 > ${maxPendingAcquire}`)
+      }
+
+      test.end()
+    })
+
+    assertPendingAcquiresTest.test('not throw error if pending acquires are within limit', async test => {
+      // Arrange
+      const maxPendingAcquire = 5
+      const config = { ...connectionConfig, maxPendingAcquire }
+      await dbInstance.connect(config)
+      sandbox.stub(dbInstance._knex.client.pool, 'numPendingAcquires').returns(4)
+
+      // Act & Assert
+      try {
+        dbInstance.assertPendingAcquires()
+        test.pass('No error thrown')
+      } catch (err) {
+        test.fail('Should not have thrown error')
+      }
+
+      test.end()
+    })
+
+    assertPendingAcquiresTest.end()
+  })
+
+  databaseTest.test('getPendingAcquires should', getPendingAcquiresTest => {
+    getPendingAcquiresTest.test('return the number of pending acquires', async test => {
+      // Arrange
+      const pendingAcquires = 3
+      await dbInstance.connect(connectionConfig)
+      sandbox.stub(dbInstance._knex.client.pool, 'numPendingAcquires').returns(pendingAcquires)
+
+      // Act
+      const result = dbInstance.getPendingAcquires()
+
+      // Assert
+      test.equal(result, pendingAcquires)
+      test.end()
+    })
+
+    getPendingAcquiresTest.test('throw error if database is not connected', test => {
+      try {
+        dbInstance.getPendingAcquires()
+        test.fail('Should have thrown error')
+      } catch (err) {
+        test.equal(err.message, 'The database must be connected to get the number of pending acquires')
+        test.end()
+      }
+    })
+
+    getPendingAcquiresTest.end()
   })
 
   databaseTest.end()
