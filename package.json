@@ -70,7 +70,7 @@
   "devDependencies": {
     "@mojaloop/sdk-standard-components": ">=19.x.x",
     "audit-ci": "^7.1.0",
-    "npm-check-updates": "17.1.13",
+    "npm-check-updates": "17.1.12",
     "nyc": "17.1.0",
     "pre-commit": "1.2.2",
     "proxyquire": "2.1.3",
