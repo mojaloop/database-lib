@@ -86,12 +86,10 @@ class Database {
 
   async disconnect () {
     if (this._knex) {
-      console.log('Closing database connection...')
       this._removeTableProperties()
       this._tables = []
       await this._knex.destroy()
       this._knex = null
-      console.log('Database connection closed.')
     }
   }
 
