@@ -13,6 +13,7 @@ Test('database', databaseTest => {
   let knexConnStub
   let Database
   let dbInstance
+  let exitHookStub
 
   const connectionConfig = {
     client: 'mysql',
@@ -52,6 +53,8 @@ Test('database', databaseTest => {
   databaseTest.beforeEach(t => {
     sandbox = Sinon.createSandbox()
 
+    exitHookStub = sandbox.stub()
+
     knexConnStub = sandbox.stub()
     knexConnStub.destroy = sandbox.stub()
     knexConnStub.client = { config: { client: 'mysql' }, pool: { numPendingAcquires () {} } }
@@ -62,7 +65,7 @@ Test('database', databaseTest => {
 
     tableStub = sandbox.stub()
 
-    Database = Proxyquire(`${src}/database`, { knex: knexStub, './table': tableStub })
+    Database = Proxyquire(`${src}/database`, { knex: knexStub, './table': tableStub, 'async-exit-hook': exitHookStub })
     dbInstance = new Database()
 
     t.end()
@@ -383,50 +386,34 @@ Test('database', databaseTest => {
   })
 
   databaseTest.test('connect should', connectTest => {
-    connectTest.test('register signal handlers only once', async test => {
-      const processOnStub = sandbox.stub(process, 'on')
-
-      await dbInstance.connect(connectionConfig)
+    connectTest.test('register exit hook', async test => {
+      // Act
       await dbInstance.connect(connectionConfig)
 
-      test.ok(processOnStub.calledTwice)
-      test.ok(processOnStub.calledWith('SIGINT'))
-      test.ok(processOnStub.calledWith('SIGTERM'))
-      test.equal(dbInstance._signalHandlersRegistered, true)
+      // Assert
+      test.ok(exitHookStub.calledOnce)
+      test.ok(exitHookStub.calledWith(Sinon.match.func))
 
-      processOnStub.restore()
+      // Cleanup
       test.end()
     })
 
-    connectTest.test('handle SIGINT signal', async test => {
-      const processOnStub = sandbox.stub(process, 'on')
-      const handleShutdownStub = sandbox.stub(dbInstance, '_handleShutdown')
-
+    connectTest.test('call disconnect on process exit', async test => {
+      // Arrange
+      // Simulate process exit by manually calling the registered function
       await dbInstance.connect(connectionConfig)
-      const sigintHandler = processOnStub.firstCall.args[1]
+      const exitCallback = exitHookStub.firstCall.args[0] // Get the first function registered
+      const disconnectStub = sandbox.stub(dbInstance, 'disconnect').resolves()
 
-      await sigintHandler()
+      // Act
+      exitCallback() // Simulate process exit
 
-      test.ok(handleShutdownStub.calledOnceWith('SIGINT'))
+      // Assert
+      test.ok(exitHookStub.calledOnce)
+      test.ok(disconnectStub.calledOnce)
 
-      processOnStub.restore()
-      handleShutdownStub.restore()
-      test.end()
-    })
-
-    connectTest.test('handle SIGTERM signal', async test => {
-      const processOnStub = sandbox.stub(process, 'on')
-      const handleShutdownStub = sandbox.stub(dbInstance, '_handleShutdown')
-
-      await dbInstance.connect(connectionConfig)
-      const sigtermHandler = processOnStub.secondCall.args[1]
-
-      await sigtermHandler()
-
-      test.ok(handleShutdownStub.calledOnceWith('SIGTERM'))
-
-      processOnStub.restore()
-      handleShutdownStub.restore()
+      // Cleanup
+      disconnectStub.restore()
       test.end()
     })
 

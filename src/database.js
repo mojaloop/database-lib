@@ -4,6 +4,7 @@ const Knex = require('knex')
 const ErrorHandler = require('@mojaloop/central-services-error-handling')
 const Table = require('./table')
 const Utils = require('./utils.js')
+const exitHook = require('async-exit-hook')
 
 /* Default config to fall back to when using deprecated URI connection string */
 const defaultConfig = {
@@ -80,16 +81,7 @@ class Database {
     this._tables = await this._listTables()
     await this._setTableProperties()
 
-    // Register signal handlers only once
-    if (!this._signalHandlersRegistered) {
-      process.on('SIGINT', async () => {
-        await this._handleShutdown('SIGINT')
-      })
-      process.on('SIGTERM', async () => {
-        await this._handleShutdown('SIGTERM')
-      })
-      this._signalHandlersRegistered = true
-    }
+    exitHook(() => this.disconnect())
   }
 
   async disconnect () {
@@ -148,13 +140,6 @@ class Database {
       throw new Error('The database must be connected to get the number of pending acquires')
     }
     return this._knex.client.pool.numPendingAcquires()
-  }
-
-  async _handleShutdown (signal) {
-    console.log(`Received ${signal}, shutting down database...`)
-    await this.disconnect()
-    console.log('Cleanup complete. Exiting process.')
-    process.exit(0)
   }
 }
 
