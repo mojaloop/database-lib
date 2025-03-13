@@ -80,7 +80,9 @@ class Database {
     this._tables = await this._listTables()
     await this._setTableProperties()
 
-    exitHook(() => this.disconnect())
+    exitHook(callback => {
+      this.disconnect().finally(callback)
+    })
   }
 
   async disconnect () {
