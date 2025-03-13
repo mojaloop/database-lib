@@ -382,5 +382,56 @@ Test('database', databaseTest => {
     getPendingAcquiresTest.end()
   })
 
+  databaseTest.test('connect should', connectTest => {
+    connectTest.test('register signal handlers only once', async test => {
+      const processOnStub = sandbox.stub(process, 'on')
+
+      await dbInstance.connect(connectionConfig)
+      await dbInstance.connect(connectionConfig)
+
+      test.ok(processOnStub.calledTwice)
+      test.ok(processOnStub.calledWith('SIGINT'))
+      test.ok(processOnStub.calledWith('SIGTERM'))
+      test.equal(dbInstance._signalHandlersRegistered, true)
+
+      processOnStub.restore()
+      test.end()
+    })
+
+    connectTest.test('handle SIGINT signal', async test => {
+      const processOnStub = sandbox.stub(process, 'on')
+      const handleShutdownStub = sandbox.stub(dbInstance, '_handleShutdown')
+
+      await dbInstance.connect(connectionConfig)
+      const sigintHandler = processOnStub.firstCall.args[1]
+
+      await sigintHandler()
+
+      test.ok(handleShutdownStub.calledOnceWith('SIGINT'))
+
+      processOnStub.restore()
+      handleShutdownStub.restore()
+      test.end()
+    })
+
+    connectTest.test('handle SIGTERM signal', async test => {
+      const processOnStub = sandbox.stub(process, 'on')
+      const handleShutdownStub = sandbox.stub(dbInstance, '_handleShutdown')
+
+      await dbInstance.connect(connectionConfig)
+      const sigtermHandler = processOnStub.secondCall.args[1]
+
+      await sigtermHandler()
+
+      test.ok(handleShutdownStub.calledOnceWith('SIGTERM'))
+
+      processOnStub.restore()
+      handleShutdownStub.restore()
+      test.end()
+    })
+
+    connectTest.end()
+  })
+
   databaseTest.end()
 })

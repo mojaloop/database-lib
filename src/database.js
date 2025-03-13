@@ -29,6 +29,7 @@ class Database {
     this._knex = null
     this._tables = []
     this._schema = null
+    this._signalHandlersRegistered = false // Track if signal handlers are already registered
 
     this._listTableQueries = {
       mysql: (knex) => {
@@ -78,14 +79,27 @@ class Database {
     this._knex = await configureKnex(config)
     this._tables = await this._listTables()
     await this._setTableProperties()
+
+    // Register signal handlers only once
+    if (!this._signalHandlersRegistered) {
+      process.on('SIGINT', async () => {
+        await this._handleShutdown('SIGINT')
+      })
+      process.on('SIGTERM', async () => {
+        await this._handleShutdown('SIGTERM')
+      })
+      this._signalHandlersRegistered = true
+    }
   }
 
   async disconnect () {
     if (this._knex) {
+      console.log('Closing database connection...')
       this._removeTableProperties()
       this._tables = []
       await this._knex.destroy()
       this._knex = null
+      console.log('Database connection closed.')
     }
   }
 
@@ -134,6 +148,13 @@ class Database {
       throw new Error('The database must be connected to get the number of pending acquires')
     }
     return this._knex.client.pool.numPendingAcquires()
+  }
+
+  async _handleShutdown (signal) {
+    console.log(`Received ${signal}, shutting down database...`)
+    await this.disconnect()
+    console.log('Cleanup complete. Exiting process.')
+    process.exit(0)
   }
 }
 
