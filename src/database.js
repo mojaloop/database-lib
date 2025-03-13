@@ -4,6 +4,7 @@ const Knex = require('knex')
 const ErrorHandler = require('@mojaloop/central-services-error-handling')
 const Table = require('./table')
 const Utils = require('./utils.js')
+const exitHook = require('async-exit-hook')
 
 /* Default config to fall back to when using deprecated URI connection string */
 const defaultConfig = {
@@ -78,6 +79,10 @@ class Database {
     this._knex = await configureKnex(config)
     this._tables = await this._listTables()
     await this._setTableProperties()
+
+    exitHook(callback => {
+      this.disconnect().finally(callback)
+    })
   }
 
   async disconnect () {
