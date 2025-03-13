@@ -30,7 +30,6 @@ class Database {
     this._knex = null
     this._tables = []
     this._schema = null
-    this._signalHandlersRegistered = false // Track if signal handlers are already registered
 
     this._listTableQueries = {
       mysql: (knex) => {
