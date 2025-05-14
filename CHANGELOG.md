@@ -2,6 +2,13 @@
 
 All notable changes to this project will be documented in this file. See [standard-version](https://github.com/conventional-changelog/standard-version) for commit guidelines.
 
+## [11.2.0](https://github.com/mojaloop/database-lib/compare/v11.1.4...v11.2.0) (2025-05-14)
+
+
+### Features
+
+* node version upgrade to v22.15.0 ([#170](https://github.com/mojaloop/database-lib/issues/170)) ([3780280](https://github.com/mojaloop/database-lib/commit/37802805fc343431c817e20c040ab2c340b932d0))
+
 ### [11.1.4](https://github.com/mojaloop/database-lib/compare/v11.1.3...v11.1.4) (2025-03-13)
 
 
