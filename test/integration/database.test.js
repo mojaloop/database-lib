@@ -39,17 +39,20 @@ const Database = require('../../src/database')
       'INSERT INTO users (name, email) VALUES (:name, :email)',
       { name: 'Charlie', email: 'charlie@example.com' }
     )
-    console.log('✅ Inserted using named placeholders (mysql2 exclusive)')
 
     const multiRes = await db._knex.raw('SELECT * FROM users; SELECT * FROM accounts;')
     const [users, accounts] = multiRes[0]
-    console.log('✅ Multiple statements result:', { users, accounts })
+    console.log('Multiple statements result:', { users, accounts })
 
-    console.log('✅ Streaming users table (mysql2 exclusive):')
     const stream = db._knex('users').select('*').stream()
     for await (const row of stream) {
       console.log('User row:', row)
     }
+
+    const result = await db._knex.raw('SELECT NOW() as currentTime;')
+    // The result structure depends on the driver and Knex's processing.
+    // For mysql2, it's typically an array of rows.
+    console.log('Test successful! MySQL server time:', result[0][0].currentTime)
 
     await db._knex.schema.dropTableIfExists('accounts')
     await db._knex.schema.dropTableIfExists('users')
