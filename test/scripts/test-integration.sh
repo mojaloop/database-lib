@@ -6,7 +6,7 @@ docker compose up -d
 # Wait for MySQL to be ready
 echo "Waiting for MySQL to be ready..."
 RETRIES=30
-until docker compose  exec -T mysql mysqladmin ping -h"127.0.0.1" --silent; do
+until docker compose exec -T mysql mysqladmin ping -h"127.0.0.1" --silent; do
   RETRIES=$((RETRIES-1))
   if [ $RETRIES -le 0 ]; then
     echo "MySQL did not become ready in time."
@@ -23,6 +23,6 @@ npm run test:int
 EXIT_CODE=$?
 
 # Tear down docker compose
-docker compose  down -v
+docker compose down -v
 
 exit $EXIT_CODE
