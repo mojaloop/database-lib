@@ -23,8 +23,11 @@ services:
         openssl x509 -req -days 365 -in /certs/server.csr -CA /certs/ca.pem -CAkey /certs/ca-key.pem -CAcreateserial -out /certs/server-cert.pem -extensions v3_req -extfile /tmp/cert.conf &&
         rm -f /certs/*.csr /certs/*.srl /tmp/cert.conf &&
         chmod 644 /certs/ca.pem /certs/server-cert.pem &&
-        chmod 600 /certs/ca-key.pem /certs/server-key.pem &&
-        echo 'SSL certificates generated successfully!'
+        chmod 644 /certs/ca-key.pem /certs/server-key.pem &&
+        echo 'SSL certificates generated successfully!' &&
+        echo 'Generated certificate files with permissions:' &&
+        ls -la /certs/ &&
+        echo 'Certificate files should be readable by any user for CI compatibility.'
       else
         echo 'SSL certificates found. Ready to start MySQL.'
       fi
