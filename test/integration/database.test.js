@@ -1,17 +1,32 @@
+/* global describe, beforeEach, afterEach, test, expect */
 const Database = require('../../src/database')
 const fs = require('fs')
 const path = require('path')
 
-;(async () => {
-  const db = new Database()
-  try {
+describe('Database Integration Tests with SSL', () => {
+  let db
+
+  beforeEach(() => {
+    db = new Database()
+  })
+
+  afterEach(async () => {
+    if (db && db._knex) {
+      await db.disconnect()
+    }
+  })
+
+  test('should connect to MySQL with SSL using mysql2 client and perform database operations', async () => {
     // Read the CA certificate for SSL verification
-    const caCert = fs.readFileSync(path.join(__dirname, '../../certs/ca.pem'))
+    const caCertPath = path.join(__dirname, '../../certs/ca.pem')
+    expect(fs.existsSync(caCertPath)).toBe(true)
+
+    const caCert = fs.readFileSync(caCertPath)
 
     await db.connect({
       client: 'mysql2',
       connection: {
-        host: '127.0.0.1',
+        host: 'localhost',
         port: 3306,
         user: 'example_user',
         password: 'example_password',
@@ -26,9 +41,14 @@ const path = require('path')
       }
     })
 
+    // Verify connection is established
+    expect(db._knex).toBeDefined()
+
+    // Clean up any existing tables
     await db._knex.schema.dropTableIfExists('accounts')
     await db._knex.schema.dropTableIfExists('users')
 
+    // Create test tables
     await db._knex.schema.createTable('users', (table) => {
       table.increments('id').primary()
       table.string('name')
@@ -41,32 +61,91 @@ const path = require('path')
       table.decimal('balance', 14, 2)
     })
 
+    // Test data insertion with named placeholders
     await db._knex.raw(
       'INSERT INTO users (name, email) VALUES (:name, :email)',
       { name: 'Charlie', email: 'charlie@example.com' }
     )
 
+    // Test multiple statements
     const multiRes = await db._knex.raw('SELECT * FROM users; SELECT * FROM accounts;')
     const [users, accounts] = multiRes[0]
-    console.log('Multiple statements result:', { users, accounts })
 
+    expect(users).toHaveLength(1)
+    expect(users[0]).toMatchObject({
+      id: 1,
+      name: 'Charlie',
+      email: 'charlie@example.com'
+    })
+    expect(accounts).toHaveLength(0)
+
+    // Test streaming functionality
+    const streamResults = []
     const stream = db._knex('users').select('*').stream()
     for await (const row of stream) {
-      console.log('User row:', row)
+      streamResults.push(row)
     }
 
-    const result = await db._knex.raw('SELECT NOW() as currentTime;')
-    // The result structure depends on the driver and Knex's processing.
-    // For mysql2, it's typically an array of rows.
-    console.log('Test successful! MySQL server time:', result[0][0].currentTime)
+    expect(streamResults).toHaveLength(1)
+    expect(streamResults[0]).toMatchObject({
+      id: 1,
+      name: 'Charlie',
+      email: 'charlie@example.com'
+    })
 
+    // Test server connection and time query
+    const result = await db._knex.raw('SELECT NOW() as currentTime;')
+    expect(result[0][0].currentTime).toBeDefined()
+    expect(result[0][0].currentTime).toBeInstanceOf(Date)
+
+    // Clean up test tables
     await db._knex.schema.dropTableIfExists('accounts')
     await db._knex.schema.dropTableIfExists('users')
-  } catch (err) {
-    console.error('❌ Failed to connect to MySQL:', err.message)
-    process.exit(1)
-  } finally {
-    await db.disconnect()
-    process.exit(0)
-  }
-})()
+  })
+
+  test('should handle mysql client authentication incompatibility with MySQL 8.0', async () => {
+    // Read the CA certificate for SSL verification
+    const caCertPath = path.join(__dirname, '../../certs/ca.pem')
+    expect(fs.existsSync(caCertPath)).toBe(true)
+
+    const caCert = fs.readFileSync(caCertPath)
+
+    // The legacy mysql client doesn't support MySQL 8.0's default caching_sha2_password
+    await expect(db.connect({
+      client: 'mysql',
+      connection: {
+        host: 'localhost',
+        port: 3306,
+        user: 'example_user',
+        password: 'example_password',
+        database: 'example_db',
+        multipleStatements: true,
+        ssl: {
+          minVersion: 'TLSv1.3',
+          rejectUnauthorized: true,
+          ca: caCert
+        }
+      }
+    })).rejects.toThrow('Client does not support authentication protocol requested by server')
+  })
+
+  test('should fail when CA certificate is missing (mysql2)', async () => {
+    const invalidCaCert = Buffer.from('invalid-certificate')
+
+    await expect(db.connect({
+      client: 'mysql2',
+      connection: {
+        host: 'localhost',
+        port: 3306,
+        user: 'example_user',
+        password: 'example_password',
+        database: 'example_db',
+        ssl: {
+          minVersion: 'TLSv1.3',
+          rejectUnauthorized: true,
+          ca: invalidCaCert
+        }
+      }
+    })).rejects.toThrow()
+  })
+})

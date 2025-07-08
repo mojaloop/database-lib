@@ -32,7 +32,7 @@
     "test:unit": "npx tape 'test/unit/**/*.test.js'",
     "test:unit:spec": "npm run test:unit | tap-spec",
     "test:xunit": "npm run test:unit | tap-xunit > ./test/results/xunit.xml",
-    "test:int": "node test/integration/database.test.js",
+    "test:int": "npx jest test/integration/database.test.js --testTimeout=30000",
     "test:coverage": "npx nyc --reporter=lcov --reporter=text-summary tapes -- 'test/unit/**/**.test.js'",
     "test:coverage-check": "npm run test:coverage && nyc check-coverage",
     "test:functional": "echo 'No functional tests defined'",
@@ -75,6 +75,7 @@
   "devDependencies": {
     "@mojaloop/sdk-standard-components": "19.16.0",
     "audit-ci": "^7.1.0",
+    "jest": "^30.0.4",
     "npm-check-updates": "18.0.1",
     "nyc": "17.1.0",
     "pre-commit": "1.2.2",
