@@ -52,6 +52,11 @@ services:
     volumes:
       - mysql_data:/var/lib/mysql
       - ./certs:/etc/mysql/certs:ro
+    healthcheck:
+      test: ["CMD", "mysqladmin", "ping", "-h", "localhost"]
+      timeout: 5s
+      retries: 10
+      start_period: 30s
 
 volumes:
   mysql_data:
