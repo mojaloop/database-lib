@@ -1,8 +1,13 @@
 const Database = require('../../src/database')
+const fs = require('fs')
+const path = require('path')
 
 ;(async () => {
   const db = new Database()
   try {
+    // Read the CA certificate for SSL verification
+    const caCert = fs.readFileSync(path.join(__dirname, '../../certs/ca.pem'))
+
     await db.connect({
       client: 'mysql2',
       connection: {
@@ -15,7 +20,8 @@ const Database = require('../../src/database')
         namedPlaceholders: true,
         ssl: {
           minVersion: 'TLSv1.3',
-          rejectUnauthorized: false // Allow self-signed certificates for testing
+          rejectUnauthorized: true, // Enable certificate validation
+          ca: caCert // Provide CA certificate for validating self-signed cert
         }
       }
     })
