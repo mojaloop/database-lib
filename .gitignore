@@ -44,3 +44,5 @@ jspm_packages
 **/*.iml
 
 #package-lock.json
+
+certs/*.pem

@@ -420,5 +420,56 @@ Test('database', databaseTest => {
     connectTest.end()
   })
 
+  databaseTest.test('listTableQueries should', listTableQueriesTest => {
+    listTableQueriesTest.test('list tables for mysql2 client', async test => {
+      // Arrange
+      const mysql2TableNames = [{ TABLE_NAME: 'products' }, { TABLE_NAME: 'orders' }]
+      // Patch knexConnStub to simulate mysql2
+      knexConnStub.client = { config: { client: 'mysql2' } }
+      // Patch the stub to return mysql2TableNames for mysql2
+      knexConnStub.withArgs('information_schema.tables').returns({
+        where: sandbox.stub().withArgs('TABLE_SCHEMA', 'databaseSchema').returns({
+          select: sandbox.stub().withArgs('TABLE_NAME').returns(Promise.resolve(mysql2TableNames))
+        })
+      })
+
+      // Patch knexStub to return the patched knexConnStub
+      knexStub.returns(knexConnStub)
+
+      // Act
+      await dbInstance.connect({ ...connectionConfig, client: 'mysql2' })
+
+      // Assert
+      test.ok(knexStub.calledOnce)
+      test.equal(knexStub.firstCall.args[0].client, 'mysql2')
+      test.equal(dbInstance._tables.length, mysql2TableNames.length)
+      mysql2TableNames.forEach(tbl => {
+        test.ok(dbInstance[tbl.TABLE_NAME])
+      })
+      test.end()
+    })
+
+    listTableQueriesTest.test('throw error for unsupported db type', async test => {
+      // Arrange
+      const unsupportedClient = 'sqlite3'
+      knexConnStub.client = { config: { client: unsupportedClient } }
+      knexStub.returns(knexConnStub)
+
+      // Remove sqlite3 from _listTableQueries if present
+      dbInstance._listTableQueries[unsupportedClient] = undefined
+
+      // Act & Assert
+      try {
+        await dbInstance.connect({ ...connectionConfig, client: unsupportedClient })
+        test.fail('Should have thrown error')
+      } catch (err) {
+        test.equal(err.message, `Listing tables is not supported for database type ${unsupportedClient}`)
+      }
+      test.end()
+    })
+
+    listTableQueriesTest.end()
+  })
+
   databaseTest.end()
 })

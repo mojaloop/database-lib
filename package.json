@@ -32,10 +32,11 @@
     "test:unit": "npx tape 'test/unit/**/*.test.js'",
     "test:unit:spec": "npm run test:unit | tap-spec",
     "test:xunit": "npm run test:unit | tap-xunit > ./test/results/xunit.xml",
+    "test:int": "npx jest test/integration/database.test.js --testTimeout=30000",
     "test:coverage": "npx nyc --reporter=lcov --reporter=text-summary tapes -- 'test/unit/**/**.test.js'",
     "test:coverage-check": "npm run test:coverage && nyc check-coverage",
     "test:functional": "echo 'No functional tests defined'",
-    "test:integration": "echo 'No integration tests defined'",
+    "test:integration": "./test/scripts/test-integration.sh",
     "audit:fix": "npm audit fix",
     "audit:check": "npx audit-ci --config ./audit-ci.jsonc",
     "dep:check": "npx ncu -e 2",
@@ -47,7 +48,8 @@
     "async-exit-hook": "^2.0.1",
     "knex": "3.1.0",
     "lodash": "4.17.21",
-    "mysql": "2.18.1"
+    "mysql": "^2.18.1",
+    "mysql2": "^3.14.1"
   },
   "overrides": {
     "tar": "6.2.1",
@@ -71,13 +73,14 @@
     "yargs-parser": "21.1.1"
   },
   "devDependencies": {
-    "@mojaloop/sdk-standard-components": "19.14.0",
+    "@mojaloop/sdk-standard-components": "19.16.0",
     "audit-ci": "^7.1.0",
+    "jest": "^30.0.4",
     "npm-check-updates": "18.0.1",
     "nyc": "17.1.0",
     "pre-commit": "1.2.2",
     "proxyquire": "2.1.3",
-    "sinon": "20.0.0",
+    "sinon": "21.0.0",
     "standard": "17.1.2",
     "standard-version": "9.5.0",
     "tap-spec": "^5.0.0",
