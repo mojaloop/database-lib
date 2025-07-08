@@ -1,23 +1,23 @@
 services:
-  mysql2:
+  mysql:
     image: mysql:8.0
-    container_name: mysql2
     environment:
       MYSQL_ROOT_PASSWORD: example_root_password
       MYSQL_DATABASE: example_db
       MYSQL_USER: example_user
       MYSQL_PASSWORD: example_password
-      MYSQL_SSL_CA: /certs/ca.pem
-      MYSQL_SSL_CERT: /certs/server-cert.pem
-      MYSQL_SSL_KEY: /certs/server-key.pem
-      # The MYSQL_SSL_MODE environment variable is set to 'REQUIRED' to enforce TLS/SSL connections for MySQL.
-      # This configuration is intended purely for testing TLS connectivity and should not be considered a secure production setup.
-      MYSQL_SSL_MODE: REQUIRED
+    command:
+      - --ssl-ca=/etc/mysql/certs/ca.pem
+      - --ssl-cert=/etc/mysql/certs/server-cert.pem
+      - --ssl-key=/etc/mysql/certs/server-key.pem
+      - --ssl=1
+      - --bind-address=0.0.0.0
+      - --require_secure_transport=ON
     ports:
       - "3306:3306"
     volumes:
-      - mysql2_data:/var/lib/mysql
-      - ./certs:/certs:ro
+      - mysql_data:/var/lib/mysql
+      - ./certs:/etc/mysql/certs:ro
 
 volumes:
-  mysql2_data:
+  mysql_data:
