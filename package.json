@@ -59,8 +59,7 @@
           "ajv": "6.12.3",
           "ejs": "3.1.10",
           "sanitize-html": "2.12.1",
-          "markdown-it": "12.3.2",
-          "undici": "6.21.1"
+          "markdown-it": "12.3.2"
         },
         "widdershins": {
           "swagger2openapi": "7.0.8",
@@ -74,7 +73,7 @@
     "yargs-parser": "21.1.1"
   },
   "devDependencies": {
-    "@mojaloop/sdk-standard-components": "19.16.0",
+    "@mojaloop/sdk-standard-components": "19.16.2",
     "audit-ci": "^7.1.0",
     "jest": "^30.0.4",
     "npm-check-updates": "18.0.1",
