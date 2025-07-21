@@ -2,6 +2,13 @@
 
 All notable changes to this project will be documented in this file. See [standard-version](https://github.com/conventional-changelog/standard-version) for commit guidelines.
 
+## [11.3.0](https://github.com/mojaloop/database-lib/compare/v11.2.1...v11.3.0) (2025-07-14)
+
+
+### Features
+
+* fix vul and update deps ([#172](https://github.com/mojaloop/database-lib/issues/172)) ([a0d969f](https://github.com/mojaloop/database-lib/commit/a0d969f94b77709a2b9712b94cf52e62961a8796))
+
 ### [11.2.1](https://github.com/mojaloop/database-lib/compare/v11.2.0...v11.2.1) (2025-07-08)
 
 ## [11.2.0](https://github.com/mojaloop/database-lib/compare/v11.1.4...v11.2.0) (2025-05-14)
