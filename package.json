@@ -52,6 +52,7 @@
     "mysql2": "^3.14.2"
   },
   "overrides": {
+    "form-data": "4.0.4",
     "tar": "6.2.1",
     "@mojaloop/ml-schema-transformer-lib": {
       "@mojaloop/central-services-shared": {
@@ -73,10 +74,10 @@
     "yargs-parser": "21.1.1"
   },
   "devDependencies": {
-    "@mojaloop/sdk-standard-components": "19.16.2",
+    "@mojaloop/sdk-standard-components": "19.16.4",
     "audit-ci": "^7.1.0",
-    "jest": "^30.0.4",
-    "npm-check-updates": "18.0.1",
+    "jest": "^30.0.5",
+    "npm-check-updates": "18.0.2",
     "nyc": "17.1.0",
     "pre-commit": "1.2.2",
     "proxyquire": "2.1.3",
