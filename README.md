@@ -7,6 +7,10 @@
 
 Shared database code for central services
 
+## CI/CD
+
+This repository uses the [mojaloop/build](https://github.com/mojaloop/ci-config-orb-build) CircleCI orb for standardized CI/CD workflows, including automated Grype vulnerability scanning for source code security.
+
 Contents:
 
 - [Usage](#usage)
