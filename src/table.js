@@ -10,7 +10,7 @@ class Table {
   }
 
   insert (fields) {
-    return this._createBuilder().insert(fields, '*').then(inserted => {
+    return this._createBuilder().insert(fields).then(inserted => {
       if (inserted.length === 0) {
         throw new Error(`There was an error inserting the record to ${this._tableName}`)
       }
@@ -20,7 +20,7 @@ class Table {
 
   update (criteria, fields) {
     const builder = this._createBuilder()
-    return this._addWhere(criteria, builder).update(fields, '*').then(updated => {
+    return this._addWhere(criteria, builder).update(fields).then(updated => {
       if (updated.length === 0) return null
       return updated.length === 1 ? updated[0] : updated
     })
