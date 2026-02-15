@@ -44,7 +44,7 @@
     "release": "standard-version --releaseCommitMessageFormat 'chore(release): {{currentTag}} [skip ci]'"
   },
   "dependencies": {
-    "@mojaloop/central-services-error-handling": "13.1.5",
+    "@mojaloop/central-services-error-handling": "13.1.6",
     "async-exit-hook": "^2.0.1",
     "knex": "3.1.0",
     "lodash": "4.17.21",
