@@ -77,7 +77,10 @@
     "yargs-parser": "21.1.1",
     "validator": "13.15.22",
     "fast-xml-parser": "5.3.6",
-    "qs": "6.14.2"
+    "qs": "6.14.2",
+    "axios": "1.13.5",
+    "lodash": "4.17.23",
+    "lodash-es": "4.17.23"
   },
   "devDependencies": {
     "@mojaloop/sdk-standard-components": "19.18.7",
