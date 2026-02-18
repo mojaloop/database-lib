@@ -36,7 +36,7 @@ Test('table', tableTest => {
       table.insert(fields)
         .then(record => {
           test.equal(record, inserted)
-          test.ok(builderStub.insert.calledWith(fields, '*'))
+          test.ok(builderStub.insert.calledWith(fields))
           test.end()
         })
     })
@@ -53,7 +53,7 @@ Test('table', tableTest => {
         })
         .catch(err => {
           test.equal(err.message, `There was an error inserting the record to ${tableName}`)
-          test.ok(builderStub.insert.calledWith(fields, '*'))
+          test.ok(builderStub.insert.calledWith(fields))
           test.end()
         })
     })
@@ -75,7 +75,7 @@ Test('table', tableTest => {
         .then(record => {
           test.equal(record, updated)
           test.ok(builderStub.where.calledWith('id', 1))
-          test.ok(updateStub.calledWith(fields, '*'))
+          test.ok(updateStub.calledWith(fields))
           test.end()
         })
     })
@@ -93,7 +93,7 @@ Test('table', tableTest => {
         .then(records => {
           test.equal(records, updated)
           test.ok(builderStub.where.calledWith('accountId', 3))
-          test.ok(updateStub.calledWith(fields, '*'))
+          test.ok(updateStub.calledWith(fields))
           test.end()
         })
     })
@@ -123,7 +123,7 @@ Test('table', tableTest => {
       table.update({}, fields)
         .then(records => {
           test.equal(records, updated)
-          test.ok(builderStub.update.calledWith(fields, '*'))
+          test.ok(builderStub.update.calledWith(fields))
           test.end()
         })
     })
@@ -137,7 +137,7 @@ Test('table', tableTest => {
       table.update(null, fields)
         .then(records => {
           test.equal(records, updated)
-          test.ok(builderStub.update.calledWith(fields, '*'))
+          test.ok(builderStub.update.calledWith(fields))
           test.end()
         })
     })
