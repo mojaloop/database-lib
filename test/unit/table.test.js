@@ -368,7 +368,8 @@ Test('table', tableTest => {
         .then(record => {
           test.equal(record, deleted)
           test.ok(builderStub.where.calledWith('id', 1))
-          test.ok(delStub.calledWith('*'))
+          test.ok(delStub.calledOnce)
+          test.ok(delStub.calledWith())
           test.end()
         })
     })
@@ -385,7 +386,8 @@ Test('table', tableTest => {
         .then(records => {
           test.equal(records, deleted)
           test.ok(builderStub.where.calledWith('accountId', 3))
-          test.ok(delStub.calledWith('*'))
+          test.ok(delStub.calledOnce)
+          test.ok(delStub.calledWith())
           test.end()
         })
     })
@@ -413,7 +415,8 @@ Test('table', tableTest => {
       table.destroy({})
         .then(records => {
           test.equal(records, deleted)
-          test.ok(builderStub.del.calledWith('*'))
+          test.ok(builderStub.del.calledOnce)
+          test.ok(builderStub.del.calledWith())
           test.end()
         })
     })
@@ -426,7 +429,8 @@ Test('table', tableTest => {
       table.destroy(null)
         .then(records => {
           test.equal(records, deleted)
-          test.ok(builderStub.del.calledWith('*'))
+          test.ok(builderStub.del.calledOnce)
+          test.ok(builderStub.del.calledWith())
           test.end()
         })
     })
@@ -528,6 +532,52 @@ Test('table', tableTest => {
     })
 
     queryFuncTest.end()
+  })
+
+  tableTest.test('_addWhere should', addWhereTest => {
+    addWhereTest.test('return builder unchanged when params is null or empty', test => {
+      test.equal(table._addWhere(null, builderStub), builderStub)
+      test.equal(table._addWhere(undefined, builderStub), builderStub)
+      test.equal(table._addWhere({}, builderStub), builderStub)
+      test.end()
+    })
+
+    addWhereTest.test('call where for simple equality criteria', test => {
+      const mockBuilder = { where: sandbox.stub().returnsThis() }
+      table._addWhere({ id: 1, name: 'test' }, mockBuilder)
+      test.ok(mockBuilder.where.calledWith('id', 1))
+      test.ok(mockBuilder.where.calledWith('name', 'test'))
+      test.end()
+    })
+
+    addWhereTest.test('call whereIn when value is an array', test => {
+      const mockBuilder = { whereIn: sandbox.stub().returnsThis() }
+      table._addWhere({ id: [1, 2, 3] }, mockBuilder)
+      test.ok(mockBuilder.whereIn.calledWith('id', [1, 2, 3]))
+      test.end()
+    })
+
+    addWhereTest.test('call where with operator for comparison criteria', test => {
+      const mockBuilder = { where: sandbox.stub().returnsThis() }
+      table._addWhere({ 'id >=': 5, 'num <': 10 }, mockBuilder)
+      test.ok(mockBuilder.where.calledWith('id', '>=', 5))
+      test.ok(mockBuilder.where.calledWith('num', '<', 10))
+      test.end()
+    })
+
+    addWhereTest.test('handle mixed criteria types', test => {
+      const mockBuilder = {
+        where: sandbox.stub().returnsThis(),
+        whereIn: sandbox.stub().returnsThis()
+      }
+      table._addWhere({ id: 1, 'num >': 5, tags: ['a', 'b'] }, mockBuilder)
+      test.ok(mockBuilder.where.calledWith('id', 1))
+      test.ok(mockBuilder.where.calledWith('num', '>', 5))
+      test.ok(mockBuilder.whereIn.calledWith('tags', ['a', 'b']))
+      test.end()
+    })
+
+    addWhereTest.end()
   })
 
   tableTest.end()
