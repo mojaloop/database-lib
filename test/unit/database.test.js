@@ -4,7 +4,6 @@ const src = '../../src'
 const Test = require('tapes')(require('tape'))
 const Sinon = require('sinon')
 const Proxyquire = require('proxyquire')
-const lodash = require('lodash')
 
 Test('database', databaseTest => {
   let sandbox
@@ -157,7 +156,7 @@ Test('database', databaseTest => {
 
     connectTest.test('throw error for invalid database schema', async (test) => {
       try {
-        const connectionConfigDuplicate = lodash.cloneDeep(connectionConfig)
+        const connectionConfigDuplicate = structuredClone(connectionConfig)
         connectionConfigDuplicate.connection.database = undefined
         await dbInstance.connect(connectionConfigDuplicate)
         test.fail('Should have thrown error')
@@ -170,7 +169,7 @@ Test('database', databaseTest => {
     })
 
     connectTest.test('connect using connection config pg and setup table properties', async test => {
-      const connectionConfigDuplicate = lodash.cloneDeep(connectionConfig)
+      const connectionConfigDuplicate = structuredClone(connectionConfig)
       connectionConfigDuplicate.client = 'pg'
       knexConnStub.client = { config: { client: 'pg' } }
       await dbInstance.connect(connectionConfigDuplicate)

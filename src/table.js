@@ -1,6 +1,6 @@
 'use strict'
 
-const _ = require('lodash')
+const assert = require('node:assert')
 
 class Table {
   constructor (name, knex) {
@@ -41,7 +41,7 @@ class Table {
 
   destroy (criteria) {
     const builder = this._createBuilder()
-    return this._addWhere(criteria, builder).del('*').then(deleted => {
+    return this._addWhere(criteria, builder).del().then(deleted => {
       if (deleted.length === 0) return null
       return deleted.length === 1 ? deleted[0] : deleted
     })
@@ -76,20 +76,24 @@ class Table {
 
   _addWhere (params, builder) {
     const criteria = params || {}
-    if (_.keys(criteria).length > 0) {
-      _.forEach(criteria, (value, key) => {
-        const condition = this._parseCriteriaKey(key)
-        if (condition.length === 1) {
-          if (_.isArray(value)) {
-            builder = builder.whereIn(condition[0], value)
-          } else {
-            builder = builder.where(condition[0], value)
-          }
-        } else {
-          builder = builder.where(condition[0], condition[1], value)
-        }
-      })
+    if (Object.keys(criteria).length === 0) {
+      return builder
     }
+
+    Object.keys(criteria).forEach(key => {
+      const value = criteria[key]
+      assert(value)
+      const condition = this._parseCriteriaKey(key)
+      if (condition.length === 1) {
+        if (Array.isArray(value)) {
+          builder = builder.whereIn(condition[0], value)
+        } else {
+          builder = builder.where(condition[0], value)
+        }
+      } else {
+        builder = builder.where(condition[0], condition[1], value)
+      }
+    })
     return builder
   }
 
