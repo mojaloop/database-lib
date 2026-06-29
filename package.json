@@ -90,7 +90,7 @@
     "@mojaloop/license-scanner-tool": "^1.1.1",
     "audit-ci": "^7.1.0",
     "jest": "^30.4.2",
-    "npm-check-updates": "22.2.7",
+    "npm-check-updates": "22.2.9",
     "nyc": "18.0.0",
     "pre-commit": "2.0.0",
     "proxyquire": "2.1.3",
