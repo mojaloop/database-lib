@@ -2,6 +2,13 @@
 
 All notable changes to this project will be documented in this file. See [standard-version](https://github.com/conventional-changelog/standard-version) for commit guidelines.
 
+### [11.3.10](https://github.com/mojaloop/database-lib/compare/v11.3.9...v11.3.10) (2026-07-10)
+
+
+### Bug Fixes
+
+* remove overambitious assert ([#196](https://github.com/mojaloop/database-lib/issues/196)) ([c882a88](https://github.com/mojaloop/database-lib/commit/c882a88e96585789c64ffc4453cc78caef518438))
+
 ### [11.3.9](https://github.com/mojaloop/database-lib/compare/v11.3.8...v11.3.9) (2026-07-08)
 
 ### [11.3.8](https://github.com/mojaloop/database-lib/compare/v11.3.7...v11.3.8) (2026-06-26)
