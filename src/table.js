@@ -26,8 +26,6 @@
 
 'use strict'
 
-const assert = require('node:assert')
-
 class Table {
   constructor (name, knex) {
     this._tableName = name
@@ -108,7 +106,6 @@ class Table {
 
     Object.keys(criteria).forEach(key => {
       const value = criteria[key]
-      assert(value)
       const condition = this._parseCriteriaKey(key)
       if (condition.length === 1) {
         if (Array.isArray(value)) {
