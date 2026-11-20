@@ -38,7 +38,6 @@ Test('database', databaseTest => {
   let knexConnStub
   let Database
   let dbInstance
-  let exitHookStub
 
   const connectionConfig = {
     client: 'mysql',
@@ -78,8 +77,6 @@ Test('database', databaseTest => {
   databaseTest.beforeEach(t => {
     sandbox = Sinon.createSandbox()
 
-    exitHookStub = sandbox.stub()
-
     knexConnStub = sandbox.stub()
     knexConnStub.destroy = sandbox.stub()
     knexConnStub.client = { config: { client: 'mysql' }, pool: { numPendingAcquires () {} } }
@@ -90,7 +87,7 @@ Test('database', databaseTest => {
 
     tableStub = sandbox.stub()
 
-    Database = Proxyquire(`${src}/database`, { knex: knexStub, './table': tableStub, 'async-exit-hook': exitHookStub })
+    Database = Proxyquire(`${src}/database`, { knex: knexStub, './table': tableStub })
     dbInstance = new Database()
 
     t.end()
@@ -411,34 +408,14 @@ Test('database', databaseTest => {
   })
 
   databaseTest.test('connect should', connectTest => {
-    connectTest.test('register exit hook', async test => {
-      // Act
+    connectTest.test('leave the process exit to the application', async test => {
+      const processEvents = ['SIGTERM', 'SIGINT', 'SIGHUP', 'beforeExit', 'exit', 'uncaughtException']
+      const listeners = () => processEvents.map(event => process.listenerCount(event))
+      const before = listeners()
+
       await dbInstance.connect(connectionConfig)
 
-      // Assert
-      test.ok(exitHookStub.calledOnce)
-      test.ok(exitHookStub.calledWith(Sinon.match.func))
-
-      // Cleanup
-      test.end()
-    })
-
-    connectTest.test('call disconnect on process exit', async test => {
-      // Arrange
-      // Simulate process exit by manually calling the registered function
-      await dbInstance.connect(connectionConfig)
-      const exitCallback = exitHookStub.firstCall.args[0] // Get the first function registered
-      const disconnectStub = sandbox.stub(dbInstance, 'disconnect').resolves()
-
-      // Act
-      exitCallback() // Simulate process exit
-
-      // Assert
-      test.ok(exitHookStub.calledOnce)
-      test.ok(disconnectStub.calledOnce)
-
-      // Cleanup
-      disconnectStub.restore()
+      test.deepEqual(listeners(), before)
       test.end()
     })
 
