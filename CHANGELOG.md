@@ -2,6 +2,17 @@
 
 All notable changes to this project will be documented in this file. See [standard-version](https://github.com/conventional-changelog/standard-version) for commit guidelines.
 
+## [12.0.0](https://github.com/mojaloop/database-lib/compare/v11.3.11...v12.0.0) (2026-11-26)
+
+
+### ⚠ BREAKING CHANGES
+
+* leave the process exit to the application (#204)
+
+### Bug Fixes
+
+* leave the process exit to the application ([#204](https://github.com/mojaloop/database-lib/issues/204)) ([3a98dff](https://github.com/mojaloop/database-lib/commit/3a98dff52ea716fc5346c6f0ae231e0c70aca8d8))
+
 ### [11.3.11](https://github.com/mojaloop/database-lib/compare/v11.3.10...v11.3.11) (2026-10-05)
 
 
